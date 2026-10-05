@@ -60,6 +60,20 @@ export const PublicFooter: React.FC = () => {
               <li>
                 <button
                   onClick={() => {
+                    setCurrentView('home');
+                    setTimeout(() => {
+                      const el = document.getElementById('tim-kami');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="hover:text-white transition-colors"
+                >
+                  Tim Asset (8 Personil)
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
                     setCurrentView('about-asset');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}

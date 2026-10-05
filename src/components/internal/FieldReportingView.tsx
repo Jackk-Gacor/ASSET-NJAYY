@@ -93,45 +93,45 @@ export const FieldReportingView: React.FC = () => {
   ).toFixed(1);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-slate-800">
       
       {/* Header Banner */}
-      <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-amber-400">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-600 uppercase tracking-wider">
             <HardHat className="w-4 h-4" />
-            <span>MODUL FIELD OPERATIONS & SITE AUDIT</span>
+            <span>MODUL FIELD OPERATIONS &amp; SITE AUDIT</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-white mt-1">
-            Field Reporting Form & Recap
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">
+            Field Reporting Form &amp; Recap
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Form pelaporan hasil inspeksi fisik, pengukuran redaman OTDR, dan bukti lapangan tersimpan di browser
           </p>
         </div>
 
         {/* Tab switchers */}
-        <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
           <button
             onClick={() => setActiveTab('form')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-              activeTab === 'form' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              activeTab === 'form' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
             }`}
           >
             Form Input
           </button>
           <button
             onClick={() => setActiveTab('table')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-              activeTab === 'table' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              activeTab === 'table' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
             }`}
           >
             Data Field ({fieldReportList.length})
           </button>
           <button
             onClick={() => setActiveTab('recap')}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-              activeTab === 'recap' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              activeTab === 'recap' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
             }`}
           >
             Statistik Rekap
@@ -139,20 +139,20 @@ export const FieldReportingView: React.FC = () => {
         </div>
       </div>
 
-      {/* TAB 1: FORM INPUT (Google Form Modern Style) */}
+      {/* TAB 1: FORM INPUT */}
       {activeTab === 'form' && (
         <div className="max-w-3xl mx-auto space-y-6">
-          <div className="bg-slate-950/90 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+          <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
             
             {/* Top decorative stripe */}
-            <div className="h-2.5 bg-gradient-to-r from-amber-500 via-sky-500 to-blue-600" />
+            <div className="h-2 bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-600" />
 
             <div className="p-6 sm:p-8 space-y-6">
-              <div className="space-y-1 pb-4 border-b border-slate-800">
-                <h2 className="text-xl font-bold text-white">
+              <div className="space-y-1 pb-4 border-b border-slate-100">
+                <h2 className="text-xl font-bold text-slate-900">
                   Formulir Laporan Lapangan (Field Inspection)
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500">
                   Isikan data inspeksi fisik kabel, pembacaan OTDR, dan kondisi jalur tiang PLN Malang Raya.
                 </p>
               </div>
@@ -162,7 +162,7 @@ export const FieldReportingView: React.FC = () => {
                 {/* Field 1: PIC & Tanggal */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Nama PIC Teknisi Lapangan *
                     </label>
                     <input
@@ -170,12 +170,12 @@ export const FieldReportingView: React.FC = () => {
                       value={formData.pic}
                       onChange={e => setFormData({ ...formData, pic: e.target.value })}
                       required
-                      className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-sky-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Tanggal Pelaksanaan *
                     </label>
                     <input
@@ -183,7 +183,7 @@ export const FieldReportingView: React.FC = () => {
                       value={formData.tanggal}
                       onChange={e => setFormData({ ...formData, tanggal: e.target.value })}
                       required
-                      className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-sky-500 font-mono"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white font-mono transition-all"
                     />
                   </div>
                 </div>
@@ -191,7 +191,7 @@ export const FieldReportingView: React.FC = () => {
                 {/* Field 2: Wilayah & Lokasi */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Wilayah Kerja Malang *
                     </label>
                     <select
@@ -199,7 +199,7 @@ export const FieldReportingView: React.FC = () => {
                       onChange={e =>
                         setFormData({ ...formData, wilayah: e.target.value as MalangRegion })
                       }
-                      className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-sky-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
                     >
                       {regions.map(r => (
                         <option key={r} value={r}>
@@ -210,24 +210,23 @@ export const FieldReportingView: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
-                      Koordinat GPS *
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Titik Lokasi / Alamat Rute *
                     </label>
                     <input
                       type="text"
-                      value={formData.koordinat}
-                      onChange={e => setFormData({ ...formData, koordinat: e.target.value })}
+                      value={formData.lokasi}
+                      onChange={e => setFormData({ ...formData, lokasi: e.target.value })}
                       required
-                      className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-sky-500 font-mono"
-                      placeholder="-7.9826, 112.6308"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
                     />
                   </div>
                 </div>
 
-                {/* Quick Geotag Presets */}
-                <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase text-slate-400 block">
-                    📍 Pintasan Koordinat Malang (Klik untuk mengisi cepat):
+                {/* Preset Spot Quick Selector */}
+                <div>
+                  <span className="block text-[11px] font-semibold text-slate-500 mb-1.5">
+                    Pintasan Koordinat Wilayah Malang:
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {presetSpots.map(s => (
@@ -235,7 +234,7 @@ export const FieldReportingView: React.FC = () => {
                         key={s.label}
                         type="button"
                         onClick={() => handlePickSpot(s)}
-                        className="px-2.5 py-1 text-[11px] rounded bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 transition-colors"
+                        className="px-2.5 py-1 text-[11px] rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors"
                       >
                         {s.label}
                       </button>
@@ -243,24 +242,11 @@ export const FieldReportingView: React.FC = () => {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Detail Lokasi / Patokan Titik Tiang / ODC *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.lokasi}
-                    onChange={e => setFormData({ ...formData, lokasi: e.target.value })}
-                    required
-                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-sky-500"
-                  />
-                </div>
-
-                {/* Field 3: Jenis Pekerjaan & Kondisi */}
+                {/* Field 3: Jenis Pekerjaan & Kondisi Fisik */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
-                      Jenis Pekerjaan Lapangan *
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Jenis Pekerjaan / Aktivitas *
                     </label>
                     <select
                       value={formData.jenisPekerjaan}
@@ -270,20 +256,20 @@ export const FieldReportingView: React.FC = () => {
                           jenisPekerjaan: e.target.value as FieldReportItem['jenisPekerjaan'],
                         })
                       }
-                      className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-sky-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
                     >
-                      <option value="Pengecekan Core">Pengecekan Core</option>
-                      <option value="Sambung Splice">Sambung Splice (Splicing)</option>
-                      <option value="Patroli Jalur">Patroli Jalur Preventif</option>
+                      <option value="Pengecekan Core">Pengecekan Core &amp; OTB</option>
+                      <option value="Sambung Splice">Sambung Splice Closure</option>
+                      <option value="Patroli Jalur">Patroli Jalur Tiang PLN</option>
                       <option value="Roll Out">Roll Out Kabel Baru</option>
-                      <option value="Perapihan OTB">Perapihan OTB / FDT</option>
-                      <option value="Ukur Redaman OTDR">Ukur Redaman OTDR Trace</option>
+                      <option value="Perapihan OTB">Perapihan Rack OTB</option>
+                      <option value="Ukur Redaman OTDR">Ukur Redaman OTDR</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
-                      Kondisi Fisik Kabel / Tiang *
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Kondisi Fisik Lapangan *
                     </label>
                     <select
                       value={formData.kondisi}
@@ -293,10 +279,10 @@ export const FieldReportingView: React.FC = () => {
                           kondisi: e.target.value as FieldReportItem['kondisi'],
                         })
                       }
-                      className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-sky-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
                     >
-                      <option value="Normal / Aman">Normal / Aman (Memenuhi SOP)</option>
-                      <option value="Redaman Tinggi">Redaman Tinggi (&gt; -22 dBm)</option>
+                      <option value="Normal / Aman">Normal / Aman (Optimal)</option>
+                      <option value="Redaman Tinggi">Redaman Tinggi (&gt; -23 dBm)</option>
                       <option value="Kritis">Kritis (Kendur / Dekat Pohon Rimbun)</option>
                       <option value="Kabel Putus / Cut">Kabel Putus / Fiber Cut</option>
                     </select>
@@ -306,7 +292,7 @@ export const FieldReportingView: React.FC = () => {
                 {/* Field 4: Redaman & Core Checked */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Nilai Redaman (dBm) *
                     </label>
                     <input
@@ -320,12 +306,12 @@ export const FieldReportingView: React.FC = () => {
                         })
                       }
                       required
-                      className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono"
+                      className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-mono focus:bg-white focus:border-blue-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Jumlah Core Diperiksa *
                     </label>
                     <input
@@ -338,18 +324,18 @@ export const FieldReportingView: React.FC = () => {
                         })
                       }
                       required
-                      className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono"
+                      className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-mono focus:bg-white focus:border-blue-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Bukti Foto Lampiran *
                     </label>
                     <select
                       value={formData.fotoType}
                       onChange={e => setFormData({ ...formData, fotoType: e.target.value })}
-                      className="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white"
+                      className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:border-blue-500"
                     >
                       <option value="ODC Closure Tag">ODC Closure Tag</option>
                       <option value="OTDR Graph Trace">OTDR Graph Trace</option>
@@ -362,26 +348,26 @@ export const FieldReportingView: React.FC = () => {
 
                 {/* Field 5: Keterangan */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Catatan Deskripsi & Rekomendasi Lapangan *
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Catatan Deskripsi &amp; Rekomendasi Lapangan *
                   </label>
                   <textarea
                     rows={3}
                     value={formData.keterangan}
                     onChange={e => setFormData({ ...formData, keterangan: e.target.value })}
                     required
-                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-sky-500"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition-all"
                   />
                 </div>
 
                 {/* Submit action */}
-                <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-500 font-mono">
+                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-[11px] text-slate-400 font-mono">
                     Form → Tersimpan di Browser (LocalStorage)
                   </span>
                   <button
                     type="submit"
-                    className="px-6 py-3 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow-md shadow-blue-600/30 flex items-center gap-2 transition-all active:scale-95"
+                    className="px-6 py-3 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md shadow-blue-500/20 flex items-center gap-2 transition-all active:scale-95"
                   >
                     <Send className="w-4 h-4" />
                     <span>Kirim Laporan Lapangan</span>
@@ -396,15 +382,15 @@ export const FieldReportingView: React.FC = () => {
 
       {/* TAB 2: DATA FIELD TABLE */}
       {activeTab === 'table' && (
-        <div className="bg-slate-950/90 border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
-          <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
+          <div className="p-5 border-b border-slate-100 flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-white">Log Hasil Pelaporan Field Terkini</h3>
-              <p className="text-xs text-slate-400">Menampilkan seluruh data masuk dari teknisi</p>
+              <h3 className="text-sm font-bold text-slate-900">Log Hasil Pelaporan Field Terkini</h3>
+              <p className="text-xs text-slate-500">Menampilkan seluruh data masuk dari teknisi</p>
             </div>
             <button
               onClick={() => setActiveTab('form')}
-              className="px-3 py-1.5 text-xs font-semibold text-sky-400 hover:text-white bg-sky-950/40 border border-sky-800 rounded-lg"
+              className="px-3.5 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs transition-colors"
             >
               + Input Form Baru
             </button>
@@ -412,68 +398,68 @@ export const FieldReportingView: React.FC = () => {
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-900 text-slate-400 font-mono uppercase text-[10px] border-b border-slate-800">
+              <thead className="bg-slate-50 text-slate-600 font-mono uppercase text-[10px] border-b border-slate-200">
                 <tr>
-                  <th className="py-3 px-4">ID Laporan & Tgl</th>
-                  <th className="py-3 px-4">PIC Teknisi</th>
-                  <th className="py-3 px-4">Wilayah & Lokasi</th>
-                  <th className="py-3 px-4">Jenis Pekerjaan</th>
-                  <th className="py-3 px-4">Redaman OTDR</th>
-                  <th className="py-3 px-4">Kondisi Fisik</th>
-                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3.5 px-4">ID Laporan &amp; Tgl</th>
+                  <th className="py-3.5 px-4">PIC Teknisi</th>
+                  <th className="py-3.5 px-4">Wilayah &amp; Lokasi</th>
+                  <th className="py-3.5 px-4">Jenis Pekerjaan</th>
+                  <th className="py-3.5 px-4">Redaman OTDR</th>
+                  <th className="py-3.5 px-4">Kondisi Fisik</th>
+                  <th className="py-3.5 px-4">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800 text-slate-300">
+              <tbody className="divide-y divide-slate-100 text-slate-700">
                 {fieldReportList.map(item => (
-                  <tr key={item.id} className="hover:bg-slate-900/60 transition-colors">
-                    <td className="py-3 px-4">
-                      <span className="font-mono text-[10px] text-sky-400 font-bold block">
+                  <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-3.5 px-4">
+                      <span className="font-mono text-[10px] text-blue-600 font-bold block">
                         {item.id}
                       </span>
-                      <span className="text-slate-500 font-mono text-[11px]">{item.tanggal}</span>
+                      <span className="text-slate-400 font-mono text-[11px]">{item.tanggal}</span>
                     </td>
-                    <td className="py-3 px-4 font-semibold text-white">{item.pic}</td>
-                    <td className="py-3 px-4">
-                      <p className="text-slate-200 font-medium">{item.wilayah}</p>
-                      <p className="text-slate-400 text-[11px] truncate max-w-xs">{item.lokasi}</p>
+                    <td className="py-3.5 px-4 font-bold text-slate-900">{item.pic}</td>
+                    <td className="py-3.5 px-4">
+                      <p className="text-slate-800 font-medium">{item.wilayah}</p>
+                      <p className="text-slate-500 text-[11px] truncate max-w-xs">{item.lokasi}</p>
                     </td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-200">
+                    <td className="py-3.5 px-4">
+                      <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-700 font-medium">
                         {item.jenisPekerjaan}
                       </span>
                     </td>
-                    <td className="py-3 px-4 font-mono font-bold tabular-nums">
+                    <td className="py-3.5 px-4 font-mono font-bold tabular-nums">
                       <span
                         className={
                           item.redamanDbm > -20
-                            ? 'text-emerald-400'
+                            ? 'text-emerald-600'
                             : item.redamanDbm > -23
-                            ? 'text-amber-400'
-                            : 'text-rose-400'
+                            ? 'text-amber-600'
+                            : 'text-rose-600'
                         }
                       >
                         {item.redamanDbm} dBm
                       </span>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-4">
                       <span
                         className={`text-[10px] font-mono px-2 py-0.5 rounded border inline-block ${
                           item.kondisi === 'Normal / Aman'
-                            ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                             : item.kondisi === 'Redaman Tinggi'
-                            ? 'bg-amber-950 text-amber-300 border-amber-800'
-                            : 'bg-rose-950 text-rose-300 border-rose-800'
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : 'bg-rose-50 text-rose-700 border-rose-200'
                         }`}
                       >
                         {item.kondisi}
                       </span>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-4">
                       <span
                         className={`text-[10px] font-mono px-2 py-0.5 rounded border inline-block ${
                           item.status === 'Verified'
-                            ? 'bg-blue-950 text-blue-300 border-blue-800'
-                            : 'bg-slate-800 text-slate-300 border-slate-700'
+                            ? 'bg-blue-50 text-blue-700 border-blue-200'
+                            : 'bg-slate-100 text-slate-700 border-slate-200'
                         }`}
                       >
                         {item.status}
@@ -490,35 +476,35 @@ export const FieldReportingView: React.FC = () => {
       {/* TAB 3: REKAP STATISTIK */}
       {activeTab === 'recap' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
-              <span className="text-xs text-slate-400">Total Laporan Verified</span>
-              <p className="text-3xl font-extrabold font-mono text-emerald-400 tabular-nums">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
+              <span className="text-xs font-medium text-slate-500">Total Laporan Verified</span>
+              <p className="text-3xl sm:text-4xl font-extrabold font-mono text-emerald-600 tabular-nums mt-1">
                 {totalVerified}
               </p>
-              <p className="text-[11px] text-slate-500">Telah diverifikasi supervisor</p>
+              <p className="text-[11px] text-slate-400 mt-1">Telah diverifikasi supervisor</p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
-              <span className="text-xs text-slate-400">Memerlukan Tindak Lanjut</span>
-              <p className="text-3xl font-extrabold font-mono text-amber-400 tabular-nums">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
+              <span className="text-xs font-medium text-slate-500">Memerlukan Tindak Lanjut</span>
+              <p className="text-3xl sm:text-4xl font-extrabold font-mono text-amber-600 tabular-nums mt-1">
                 {totalNeedAction}
               </p>
-              <p className="text-[11px] text-slate-500">Redaman tinggi / perlu re-splice</p>
+              <p className="text-[11px] text-slate-400 mt-1">Redaman tinggi / perlu re-splice</p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
-              <span className="text-xs text-slate-400">Rata-Rata Redaman Malang</span>
-              <p className="text-3xl font-extrabold font-mono text-sky-400 tabular-nums">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-1">
+              <span className="text-xs font-medium text-slate-500">Rata-Rata Redaman Malang</span>
+              <p className="text-3xl sm:text-4xl font-extrabold font-mono text-blue-600 tabular-nums mt-1">
                 {avgLoss} dBm
               </p>
-              <p className="text-[11px] text-slate-500">Kategori optimal sesuai SLA</p>
+              <p className="text-[11px] text-slate-400 mt-1">Kategori optimal sesuai SLA</p>
             </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-3">
-            <h3 className="text-base font-bold text-white">Ringkasan Wilayah Patroli Lapangan</h3>
-            <p className="text-xs text-slate-400">
+          <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-2">
+            <h3 className="text-base font-bold text-slate-900">Ringkasan Wilayah Patroli Lapangan</h3>
+            <p className="text-xs text-slate-500 leading-relaxed">
               Jalur patroli preventif kabel udara ADSS terfokus pada titik rawan proyek pelebaran jalan flyover Gadang, simpang Karanglo, dan jalur perbukitan Batu Bumiaji.
             </p>
           </div>

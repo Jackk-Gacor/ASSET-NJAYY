@@ -60,69 +60,69 @@ export const DataCoreDetailModal: React.FC = () => {
     selectedCore.status !== 'Approved';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
       <div 
-        className="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
+        className="bg-white border border-slate-200 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-slate-800"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-6 bg-slate-950 border-b border-slate-800 flex items-start justify-between">
+        <div className="p-6 bg-slate-50 border-b border-slate-200 flex items-start justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold text-sky-400">
+              <span className="text-xs font-mono font-bold text-blue-600">
                 {selectedCore.id}
               </span>
-              <span className="text-xs text-slate-500">·</span>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+              <span className="text-xs text-slate-400">·</span>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-200">
                 {selectedCore.type}
               </span>
               <span
                 className={`text-xs font-semibold px-2 py-0.5 rounded border ${
                   selectedCore.status === 'Approved'
-                    ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                     : selectedCore.status === 'WIG'
-                    ? 'bg-blue-950 text-blue-300 border-blue-700'
-                    : 'bg-amber-950 text-amber-300 border-amber-700'
+                    ? 'bg-blue-50 text-blue-700 border-blue-200'
+                    : 'bg-amber-50 text-amber-700 border-amber-200'
                 }`}
               >
                 {selectedCore.status}
               </span>
             </div>
-            <h2 className="text-xl font-extrabold text-white">
+            <h2 className="text-xl font-extrabold text-slate-900">
               {selectedCore.hostname}
             </h2>
-            <p className="text-xs text-slate-400 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-sky-400" />
+            <p className="text-xs text-slate-500 flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-blue-600" />
               <span>{selectedCore.coordinates.address}</span>
             </p>
           </div>
 
           <button
             onClick={closeCoreDetail}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab switcher */}
-        <div className="flex border-b border-slate-800 bg-slate-950/60 px-6">
+        <div className="flex border-b border-slate-200 bg-white px-6">
           <button
             onClick={() => setActiveTab('info')}
             className={`py-3 px-4 text-xs font-semibold border-b-2 transition-all ${
               activeTab === 'info'
-                ? 'border-sky-500 text-sky-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            Detail Parameter & Core
+            Detail Parameter &amp; Core
           </button>
           <button
             onClick={() => setActiveTab('docs')}
             className={`py-3 px-4 text-xs font-semibold border-b-2 transition-all ${
               activeTab === 'docs'
-                ? 'border-sky-500 text-sky-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             Dokumen Teknis (KMZ, Visio, GDB)
@@ -131,11 +131,11 @@ export const DataCoreDetailModal: React.FC = () => {
             onClick={() => setActiveTab('relations')}
             className={`py-3 px-4 text-xs font-semibold border-b-2 transition-all ${
               activeTab === 'relations'
-                ? 'border-sky-500 text-sky-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            Relasi Feeder, Uplink & Ring
+            Relasi Feeder, Uplink &amp; Ring
           </button>
         </div>
 
@@ -147,69 +147,73 @@ export const DataCoreDetailModal: React.FC = () => {
             <div className="space-y-6">
               {/* Specs Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
-                  <span className="text-[10px] font-mono uppercase text-slate-400">OLT Name</span>
-                  <p className="text-xs font-bold text-white mt-0.5">{selectedCore.oltName}</p>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] font-mono uppercase text-slate-500">OLT Name</span>
+                  <p className="text-xs font-bold text-slate-900 mt-0.5">{selectedCore.oltName}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
-                  <span className="text-[10px] font-mono uppercase text-slate-400">POP Central</span>
-                  <p className="text-xs font-bold text-white mt-0.5">{selectedCore.popName}</p>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] font-mono uppercase text-slate-500">POP Central</span>
+                  <p className="text-xs font-bold text-slate-900 mt-0.5">{selectedCore.popName}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
-                  <span className="text-[10px] font-mono uppercase text-slate-400">Wilayah Kerja</span>
-                  <p className="text-xs font-bold text-white mt-0.5">{selectedCore.region}</p>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] font-mono uppercase text-slate-500">Wilayah Kerja</span>
+                  <p className="text-xs font-bold text-slate-900 mt-0.5">{selectedCore.region}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
-                  <span className="text-[10px] font-mono uppercase text-slate-400">PIC Penanggungjawab</span>
-                  <p className="text-xs font-bold text-sky-300 mt-0.5 flex items-center gap-1">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] font-mono uppercase text-slate-500">PIC Penanggungjawab</span>
+                  <p className="text-xs font-bold text-blue-600 mt-0.5 flex items-center gap-1">
                     <User className="w-3 h-3" />
                     <span>{selectedCore.pic}</span>
                   </p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
-                  <span className="text-[10px] font-mono uppercase text-slate-400">Tanggal Registrasi</span>
-                  <p className="text-xs font-bold text-white mt-0.5 font-mono">{selectedCore.date}</p>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] font-mono uppercase text-slate-500">Tanggal Registrasi</span>
+                  <p className="text-xs font-bold text-slate-900 mt-0.5 font-mono">{selectedCore.date}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
-                  <span className="text-[10px] font-mono uppercase text-slate-400">Last Update Sinkron</span>
-                  <p className="text-xs font-bold text-emerald-400 mt-0.5 font-mono">{selectedCore.lastUpdate}</p>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] font-mono uppercase text-slate-500">Last Update Sinkron</span>
+                  <p className="text-xs font-bold text-emerald-600 mt-0.5 font-mono">{selectedCore.lastUpdate}</p>
                 </div>
               </div>
 
               {/* Optical Parameters Card */}
-              <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-3">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                    Alokasi Core & Kualitas Redaman Optik
-                  </h4>
-                  <span className="text-[10px] font-mono text-sky-400">
-                    Rasio Utilisasi: {Math.round((selectedCore.coreUsed / selectedCore.coreCapacity) * 100)}%
+                  <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                    <Activity className="w-4 h-4 text-blue-600" />
+                    <span>Parameter Kapasitas Core &amp; Redaman OTDR</span>
+                  </span>
+                  <span className="text-xs font-mono font-bold text-blue-600">
+                    {Math.round((selectedCore.coreUsed / selectedCore.coreCapacity) * 100)}% Terpakai
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-[11px] text-slate-400">Core Terpakai / Total Kapasitas</span>
-                    <p className="text-lg font-mono font-bold text-white tabular-nums mt-0.5">
-                      {selectedCore.coreUsed} / {selectedCore.coreCapacity} Core
-                    </p>
-                    <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden mt-1.5">
-                      <div
-                        style={{
-                          width: `${(selectedCore.coreUsed / selectedCore.coreCapacity) * 100}%`,
-                        }}
-                        className="h-full bg-sky-500 rounded-full"
-                      />
-                    </div>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs text-slate-600">
+                    <span>Okupansi Helai Core</span>
+                    <span className="font-mono">
+                      <strong>{selectedCore.coreUsed}</strong> dari {selectedCore.coreCapacity} Core
+                    </span>
                   </div>
+                  <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                    <div
+                      style={{ width: `${(selectedCore.coreUsed / selectedCore.coreCapacity) * 100}%` }}
+                      className="h-full bg-blue-600 rounded-full"
+                    />
+                  </div>
+                </div>
 
+                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-200 text-xs">
                   <div>
-                    <span className="text-[11px] text-slate-400">Rata-Rata Redaman (Loss dBm)</span>
-                    <p className="text-lg font-mono font-bold text-emerald-400 tabular-nums mt-0.5">
+                    <span className="text-slate-500">Hasil Ukur Redaman:</span>
+                    <p className="font-mono font-bold text-slate-900 text-sm mt-0.5">
                       {selectedCore.attenuationDbm} dBm
                     </p>
-                    <p className="text-[10px] text-slate-500 mt-1">
-                      Kondisi: {selectedCore.attenuationDbm > -22 ? 'Optimal (SOP PLN)' : 'Warning Perlu Splice'}
+                  </div>
+                  <div>
+                    <span className="text-slate-500">Ambang Batas Maksimal:</span>
+                    <p className="font-mono font-bold text-slate-600 text-sm mt-0.5">
+                      -24.0 dBm (Standard)
                     </p>
                   </div>
                 </div>
@@ -217,31 +221,31 @@ export const DataCoreDetailModal: React.FC = () => {
 
               {/* Notes */}
               {selectedCore.notes && (
-                <div className="p-3.5 rounded-xl bg-slate-800/40 border border-slate-800 text-xs text-slate-300">
-                  <span className="font-semibold text-white block mb-0.5">Catatan Teknis Khusus:</span>
-                  {selectedCore.notes}
+                <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-100 text-xs text-slate-700 space-y-1">
+                  <span className="font-bold text-blue-900 block">Catatan Lapangan &amp; Verifikasi:</span>
+                  <p>{selectedCore.notes}</p>
                 </div>
               )}
             </div>
           )}
 
-          {/* TAB 2: DOCUMENTS */}
+          {/* TAB 2: DOCS */}
           {activeTab === 'docs' && (
             <div className="space-y-4">
-              <p className="text-xs text-slate-400">
-                Dokumen resmi yang dilampirkan oleh Tim Engineering GIS & Tim Data:
+              <p className="text-xs text-slate-500">
+                Status kelengkapan 4 berkas dokumen validasi standar PLN Icon Plus Malang:
               </p>
 
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {/* KMZ */}
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold text-xs font-mono">
+                    <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs font-mono">
                       KMZ
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-white">Geospatial Google Earth (KMZ)</h4>
-                      <p className="text-[11px] text-slate-400 font-mono">
+                      <h4 className="text-xs font-bold text-slate-900">Google Earth Route (.kmz)</h4>
+                      <p className="text-[11px] text-slate-500 font-mono">
                         {selectedCore.documents.kmzFilename || 'Belum diunggah'}
                       </p>
                     </div>
@@ -249,25 +253,25 @@ export const DataCoreDetailModal: React.FC = () => {
                   {selectedCore.documents.kmz ? (
                     <button
                       onClick={() => handleDownloadDoc('KMZ', selectedCore.documents.kmzFilename)}
-                      className="px-3 py-1.5 text-xs font-semibold text-sky-400 hover:text-white bg-sky-950/40 hover:bg-sky-900/60 border border-sky-800 rounded-lg flex items-center gap-1.5 transition-colors"
+                      className="px-3 py-1.5 text-xs font-semibold text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg flex items-center gap-1.5 transition-colors"
                     >
                       <Download className="w-3.5 h-3.5" />
                       <span>Unduh</span>
                     </button>
                   ) : (
-                    <span className="text-xs text-slate-500 font-mono">Tidak ada</span>
+                    <span className="text-xs text-slate-400 font-mono">Tidak ada</span>
                   )}
                 </div>
 
                 {/* Visio */}
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-sky-600/20 text-sky-400 flex items-center justify-center font-bold text-xs font-mono">
+                    <div className="w-9 h-9 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-xs font-mono">
                       VSD
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-white">Single Line Diagram Visio (.vsdx)</h4>
-                      <p className="text-[11px] text-slate-400 font-mono">
+                      <h4 className="text-xs font-bold text-slate-900">Single Line Diagram Visio (.vsdx)</h4>
+                      <p className="text-[11px] text-slate-500 font-mono">
                         {selectedCore.documents.visioFilename || 'Belum diunggah'}
                       </p>
                     </div>
@@ -275,25 +279,25 @@ export const DataCoreDetailModal: React.FC = () => {
                   {selectedCore.documents.visio ? (
                     <button
                       onClick={() => handleDownloadDoc('VISIO', selectedCore.documents.visioFilename)}
-                      className="px-3 py-1.5 text-xs font-semibold text-sky-400 hover:text-white bg-sky-950/40 hover:bg-sky-900/60 border border-sky-800 rounded-lg flex items-center gap-1.5 transition-colors"
+                      className="px-3 py-1.5 text-xs font-semibold text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg flex items-center gap-1.5 transition-colors"
                     >
                       <Download className="w-3.5 h-3.5" />
                       <span>Unduh</span>
                     </button>
                   ) : (
-                    <span className="text-xs text-slate-500 font-mono">Tidak ada</span>
+                    <span className="text-xs text-slate-400 font-mono">Tidak ada</span>
                   )}
                 </div>
 
                 {/* GDB */}
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xs font-mono">
+                    <div className="w-9 h-9 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs font-mono">
                       GDB
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-white">Esri Geodatabase (GDB Spasial)</h4>
-                      <p className="text-[11px] text-slate-400 font-mono">
+                      <h4 className="text-xs font-bold text-slate-900">Esri Geodatabase (GDB Spasial)</h4>
+                      <p className="text-[11px] text-slate-500 font-mono">
                         {selectedCore.documents.gdbFilename || 'Belum diunggah'}
                       </p>
                     </div>
@@ -301,25 +305,25 @@ export const DataCoreDetailModal: React.FC = () => {
                   {selectedCore.documents.gdb ? (
                     <button
                       onClick={() => handleDownloadDoc('GDB', selectedCore.documents.gdbFilename)}
-                      className="px-3 py-1.5 text-xs font-semibold text-sky-400 hover:text-white bg-sky-950/40 hover:bg-sky-900/60 border border-sky-800 rounded-lg flex items-center gap-1.5 transition-colors"
+                      className="px-3 py-1.5 text-xs font-semibold text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg flex items-center gap-1.5 transition-colors"
                     >
                       <Download className="w-3.5 h-3.5" />
                       <span>Unduh</span>
                     </button>
                   ) : (
-                    <span className="text-xs text-slate-500 font-mono">Tidak ada</span>
+                    <span className="text-xs text-slate-400 font-mono">Tidak ada</span>
                   )}
                 </div>
 
                 {/* Spreadsheet */}
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold text-xs font-mono">
+                    <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs font-mono">
                       XLS
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-white">Core Assignment Matrix (.xlsx)</h4>
-                      <p className="text-[11px] text-slate-400 font-mono">
+                      <h4 className="text-xs font-bold text-slate-900">Core Assignment Matrix (.xlsx)</h4>
+                      <p className="text-[11px] text-slate-500 font-mono">
                         {selectedCore.documents.sheetFilename || 'Belum diunggah'}
                       </p>
                     </div>
@@ -327,13 +331,13 @@ export const DataCoreDetailModal: React.FC = () => {
                   {selectedCore.documents.spreadsheet ? (
                     <button
                       onClick={() => handleDownloadDoc('XLSX', selectedCore.documents.sheetFilename)}
-                      className="px-3 py-1.5 text-xs font-semibold text-sky-400 hover:text-white bg-sky-950/40 hover:bg-sky-900/60 border border-sky-800 rounded-lg flex items-center gap-1.5 transition-colors"
+                      className="px-3 py-1.5 text-xs font-semibold text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg flex items-center gap-1.5 transition-colors"
                     >
                       <Download className="w-3.5 h-3.5" />
                       <span>Unduh</span>
                     </button>
                   ) : (
-                    <span className="text-xs text-slate-500 font-mono">Tidak ada</span>
+                    <span className="text-xs text-slate-400 font-mono">Tidak ada</span>
                   )}
                 </div>
               </div>
@@ -343,61 +347,61 @@ export const DataCoreDetailModal: React.FC = () => {
           {/* TAB 3: RELATIONS */}
           {activeTab === 'relations' && (
             <div className="space-y-4">
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 Keterkaitan 3 pilar engineering antara Core, Feeder, Uplink, dan Ring proteksi:
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-                  <div className="flex items-center gap-2 text-sky-400 text-xs font-bold">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                  <div className="flex items-center gap-2 text-blue-600 text-xs font-bold">
                     <Compass className="w-4 h-4" />
                     <span>Feeder Terkait</span>
                   </div>
-                  <p className="text-xs font-mono text-white font-semibold">
+                  <p className="text-xs font-mono text-slate-900 font-semibold">
                     {selectedCore.relatedFeeder}
                   </p>
                   <p className="text-[10px] text-slate-500">Distribusi ke pelanggan</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-                  <div className="flex items-center gap-2 text-cyan-400 text-xs font-bold">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                  <div className="flex items-center gap-2 text-sky-600 text-xs font-bold">
                     <Layers className="w-4 h-4" />
                     <span>Uplink Terkait</span>
                   </div>
-                  <p className="text-xs font-mono text-white font-semibold">
+                  <p className="text-xs font-mono text-slate-900 font-semibold">
                     {selectedCore.relatedUplink}
                   </p>
                   <p className="text-[10px] text-slate-500">Transmisi backbone 10G/40G</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-                  <div className="flex items-center gap-2 text-purple-400 text-xs font-bold">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                  <div className="flex items-center gap-2 text-purple-600 text-xs font-bold">
                     <RefreshCw className="w-4 h-4" />
                     <span>Ring Proteksi</span>
                   </div>
-                  <p className="text-xs font-mono text-white font-semibold">
+                  <p className="text-xs font-mono text-slate-900 font-semibold">
                     {selectedCore.relatedRing}
                   </p>
                   <p className="text-[10px] text-slate-500">Loop redundansi aktif</p>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-slate-800/40 border border-slate-800 space-y-2">
-                <span className="text-xs font-bold text-white block">Visualisasi Rantai Jalur:</span>
-                <div className="flex items-center gap-2 text-xs font-mono text-slate-300 overflow-x-auto pb-1">
-                  <span className="px-2 py-1 rounded bg-slate-900 border border-slate-700">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                <span className="text-xs font-bold text-slate-900 block">Visualisasi Rantai Jalur:</span>
+                <div className="flex items-center gap-2 text-xs font-mono text-slate-700 overflow-x-auto pb-1">
+                  <span className="px-2 py-1 rounded bg-white border border-slate-200">
                     {selectedCore.popName}
                   </span>
                   <span>→</span>
-                  <span className="px-2 py-1 rounded bg-blue-950 border border-blue-800 text-blue-300 font-bold">
+                  <span className="px-2 py-1 rounded bg-blue-50 border border-blue-200 text-blue-700 font-bold">
                     {selectedCore.hostname}
                   </span>
                   <span>→</span>
-                  <span className="px-2 py-1 rounded bg-slate-900 border border-slate-700">
+                  <span className="px-2 py-1 rounded bg-white border border-slate-200">
                     {selectedCore.relatedFeeder}
                   </span>
                   <span>→</span>
-                  <span className="px-2 py-1 rounded bg-slate-900 border border-slate-700">
+                  <span className="px-2 py-1 rounded bg-white border border-slate-200">
                     {selectedCore.relatedRing}
                   </span>
                 </div>
@@ -408,21 +412,21 @@ export const DataCoreDetailModal: React.FC = () => {
         </div>
 
         {/* Modal Footer Actions */}
-        <div className="p-4 bg-slate-950 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <button
               onClick={handleViewMap}
-              className="px-3.5 py-2 text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
             >
-              <MapPin className="w-3.5 h-3.5 text-sky-400" />
+              <MapPin className="w-3.5 h-3.5 text-blue-600" />
               <span>Lihat di Peta</span>
             </button>
 
             <button
               onClick={handleViewTopology}
-              className="px-3.5 py-2 text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
             >
-              <Share2 className="w-3.5 h-3.5 text-sky-400" />
+              <Share2 className="w-3.5 h-3.5 text-blue-600" />
               <span>Lihat Topologi</span>
             </button>
           </div>
@@ -431,7 +435,7 @@ export const DataCoreDetailModal: React.FC = () => {
             {isEligibleToApprove && (
               <button
                 onClick={handleApprove}
-                className="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow-sm flex items-center gap-1.5 transition-colors"
+                className="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm flex items-center gap-1.5 transition-colors"
               >
                 <CheckCircle className="w-3.5 h-3.5" />
                 <span>Setujui (Approved/WIG)</span>
@@ -440,7 +444,7 @@ export const DataCoreDetailModal: React.FC = () => {
 
             <button
               onClick={closeCoreDetail}
-              className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg transition-colors"
+              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
             >
               Tutup
             </button>

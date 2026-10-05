@@ -73,7 +73,7 @@ export const PublicStorytelling: React.FC = () => {
   ];
 
   return (
-    <section id="storytelling-section" className="py-20 lg:py-28 bg-white border-t border-slate-200">
+    <section id="tentang-sistem" className="py-20 lg:py-28 bg-white border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}

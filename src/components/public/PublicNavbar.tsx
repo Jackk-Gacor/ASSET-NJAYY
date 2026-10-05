@@ -1,23 +1,41 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { LogIn, Menu, X, Shield, Activity, Network } from 'lucide-react';
+import { Menu, X, Activity, Network } from 'lucide-react';
 
 export const PublicNavbar: React.FC = () => {
   const { currentView, setCurrentView, setIsLoginModalOpen, isLoggedIn, logout } = useApp();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { id: 'home', label: 'Beranda' },
-    { id: 'visi-misi', label: 'Visi & Misi' },
-    { id: 'storytelling', label: 'Story Tim Asset' },
-    { id: 'about-asset', label: 'Profil & Digital Book' },
+    { id: 'tentang-sistem', label: 'Tentang sistem' },
+    { id: 'role-akses', label: 'Role & akses' },
+    { id: 'fitur', label: 'Fitur' },
+    { id: 'tim-kami', label: 'Tim kami' },
   ];
 
   const handleNavClick = (viewId: string) => {
-    if (viewId === 'storytelling') {
+    if (viewId === 'tentang-sistem') {
       setCurrentView('home');
       setTimeout(() => {
-        const el = document.getElementById('storytelling-section');
+        const el = document.getElementById('storytelling-section') || document.getElementById('tentang-sistem');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else if (viewId === 'role-akses') {
+      setCurrentView('home');
+      setTimeout(() => {
+        const el = document.getElementById('role-akses');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else if (viewId === 'fitur') {
+      setCurrentView('home');
+      setTimeout(() => {
+        const el = document.getElementById('fitur-dashboard');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else if (viewId === 'tim-kami') {
+      setCurrentView('home');
+      setTimeout(() => {
+        const el = document.getElementById('tim-kami');
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     } else {
@@ -28,65 +46,64 @@ export const PublicNavbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 transition-all">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Zone 1: Brand Wordmark */}
+          {/* Zone 1: ASSET+ DAILY REPORT Brand Wordmark (Icon Plus Signature Blue Palette) */}
           <div className="flex items-center gap-3">
             <button
-              onClick={() => handleNavClick('home')}
-              className="flex items-center gap-3 text-left focus:outline-none group"
+              onClick={() => {
+                setCurrentView('home');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="flex items-center gap-2.5 text-left focus:outline-none group cursor-pointer"
             >
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-700 via-sky-600 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                <Network className="w-6 h-6 text-white" />
+              {/* Electric Blue / Sky Gradient Icon */}
+              <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-700 via-sky-600 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-blue-500/25 group-hover:scale-105 transition-transform">
+                <Network className="w-5 h-5 text-white" />
               </div>
-              <div>
-                <span className="text-lg font-extrabold tracking-tight text-slate-900 block leading-tight">
-                  PLN ICON<span className="text-sky-600">PLUS</span>
-                </span>
-                <span className="text-xs font-semibold text-slate-600 block tracking-wide">
-                  Divisi Asset · Kantor Malang
+              <div className="flex flex-col">
+                <div className="flex items-center gap-0.5">
+                  <span className="text-xl font-black tracking-tight text-slate-900 leading-none">
+                    ASSET
+                  </span>
+                  <span className="text-xl font-black text-blue-600 leading-none">+</span>
+                </div>
+                <span className="text-[9px] font-extrabold text-slate-400 tracking-[0.2em] uppercase leading-tight mt-0.5">
+                  DAILY REPORT
                 </span>
               </div>
             </button>
           </div>
 
-          {/* Zone 2: Navigation Links (Clean text with hover indicators) */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-            {navItems.map(item => {
-              const isActive = currentView === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavClick(item.id)}
-                  className={`relative py-2 text-sm font-medium transition-colors hover:text-blue-700 ${
-                    isActive ? 'text-blue-700 font-semibold' : 'text-slate-600'
-                  }`}
-                >
-                  {item.label}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
-                  )}
-                </button>
-              );
-            })}
+          {/* Zone 2: Navigation Links */}
+          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+            {navItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => handleNavClick(item.id)}
+                className="py-2 text-sm font-medium text-slate-600 hover:text-blue-700 transition-colors cursor-pointer"
+              >
+                {item.label}
+              </button>
+            ))}
           </nav>
 
-          {/* Zone 3: Primary Actions */}
+          {/* Zone 3: LOGIN Pill Button (Dark Navy) */}
           <div className="hidden md:flex items-center gap-4">
             {isLoggedIn ? (
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setCurrentView('dashboard')}
-                  className="px-4 py-2 text-sm font-medium text-sky-700 bg-sky-50 hover:bg-sky-100 rounded-lg border border-sky-200 transition-colors flex items-center gap-2"
+                  className="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-full transition-all flex items-center gap-2 cursor-pointer shadow-sm shadow-blue-500/20"
                 >
-                  <Activity className="w-4 h-4" />
-                  Ke Dashboard
+                  <Activity className="w-3.5 h-3.5 text-sky-200" />
+                  <span>Dashboard Internal</span>
                 </button>
                 <button
                   onClick={logout}
-                  className="px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors"
+                  className="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
                 >
                   Keluar
                 </button>
@@ -94,20 +111,24 @@ export const PublicNavbar: React.FC = () => {
             ) : (
               <button
                 onClick={() => setIsLoginModalOpen(true)}
-                className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-700 to-sky-600 hover:from-blue-800 hover:to-sky-700 rounded-lg shadow-sm shadow-blue-700/25 transition-all flex items-center gap-2 active:scale-95"
+                className="px-7 py-2.5 text-xs font-extrabold text-white bg-[#0F172A] hover:bg-blue-900 rounded-full tracking-wider transition-all shadow-md hover:shadow-lg active:scale-95 cursor-pointer uppercase"
               >
-                <LogIn className="w-4 h-4" />
-                <span>Login Portal Internal</span>
+                LOGIN
               </button>
             )}
           </div>
 
-          {/* Mobile hamburger button */}
-          <div className="flex md:hidden items-center gap-2">
+          {/* Mobile Menu Trigger */}
+          <div className="md:hidden flex items-center gap-2">
+            <button
+              onClick={() => setIsLoginModalOpen(true)}
+              className="px-4 py-1.5 text-xs font-extrabold text-white bg-slate-900 rounded-full tracking-wider uppercase"
+            >
+              LOGIN
+            </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
-              aria-label="Toggle Navigation"
+              className="p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -116,56 +137,28 @@ export const PublicNavbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-3">
+        <div className="md:hidden border-t border-slate-100 bg-white px-4 pt-3 pb-5 space-y-2 animate-in slide-in-from-top-2">
           {navItems.map(item => (
             <button
               key={item.id}
               onClick={() => handleNavClick(item.id)}
-              className={`block w-full text-left px-3 py-2.5 text-sm font-medium rounded-lg ${
-                currentView === item.id
-                  ? 'bg-blue-50 text-blue-700 font-semibold'
-                  : 'text-slate-600 hover:bg-slate-50'
-              }`}
+              className="w-full text-left py-2 text-sm font-semibold text-slate-700 hover:text-blue-600"
             >
               {item.label}
             </button>
           ))}
-          <div className="pt-3 border-t border-slate-100">
-            {isLoggedIn ? (
-              <div className="space-y-2">
-                <button
-                  onClick={() => {
-                    setCurrentView('dashboard');
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg"
-                >
-                  Buka Dashboard Internal
-                </button>
-                <button
-                  onClick={() => {
-                    logout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full py-2 text-xs font-medium text-center text-slate-500"
-                >
-                  Keluar
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => {
-                  setIsLoginModalOpen(true);
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full py-2.5 text-sm font-semibold text-center text-white bg-gradient-to-r from-blue-700 to-sky-600 rounded-lg flex items-center justify-center gap-2"
-              >
-                <LogIn className="w-4 h-4" />
-                Login Portal Internal
-              </button>
-            )}
+          <div className="pt-2 border-t border-slate-100">
+            <button
+              onClick={() => {
+                setIsLoginModalOpen(true);
+                setMobileMenuOpen(false);
+              }}
+              className="w-full py-2.5 text-xs font-extrabold text-white bg-slate-900 rounded-full tracking-wider uppercase text-center"
+            >
+              LOGIN
+            </button>
           </div>
         </div>
       )}

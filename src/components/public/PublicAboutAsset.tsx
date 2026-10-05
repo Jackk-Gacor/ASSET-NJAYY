@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { BookOpen, Users, Workflow, FileText, ChevronRight, CheckCircle2, Shield, FolderGit2, Cpu, Wrench } from 'lucide-react';
+import { BookOpen, Users, Workflow, FileText, ChevronRight, CheckCircle2, Shield, FolderGit2, Cpu, Wrench, Image as ImageIcon } from 'lucide-react';
 import engineeringImage from '../../assets/images/engineering_digital_schematic_1791168753551.jpg';
 import teamImage from '../../assets/images/hero_fiber_telecom_team_1791168728867.jpg';
+import { TEAM_MEMBERS } from './PublicTeamSection';
 
 export const PublicAboutAsset: React.FC = () => {
   const [activeChapter, setActiveChapter] = useState<number>(0);
@@ -235,6 +236,41 @@ export const PublicAboutAsset: React.FC = () => {
                         <span>Pengiriman Bukti Lapangan Ber-geotag</span>
                       </li>
                     </ul>
+                  </div>
+                </div>
+
+                {/* Team Roster Grid (Matching Image Mockup) */}
+                <div className="pt-8 border-t border-slate-200 space-y-6">
+                  <div>
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                      Dibuat bersama,<br />
+                      untuk bekerja bersama.
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                      Personil tim Engineering & Intern Divisi Asset PT PLN Icon Plus Kantor Perwakilan Malang
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    {TEAM_MEMBERS.map((member) => (
+                      <div
+                        key={member.id}
+                        className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition-shadow flex flex-col"
+                      >
+                        <div className={`relative w-full aspect-[4/5] ${member.bgColor} flex items-center justify-center`}>
+                          <span className="text-4xl font-black text-slate-900/30 select-none">
+                            {member.name.split(' ').map(n => n[0]).join('')}
+                          </span>
+                          <div className="absolute bottom-3 left-3 w-7 h-7 rounded-full bg-white/90 flex items-center justify-center shadow-xs border border-white">
+                            <ImageIcon className="w-3.5 h-3.5 text-slate-400" />
+                          </div>
+                        </div>
+                        <div className="p-4 bg-white">
+                          <h4 className="font-bold text-slate-900 text-sm">{member.name}</h4>
+                          <p className="text-xs font-semibold text-rose-500 mt-0.5">{member.role}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>

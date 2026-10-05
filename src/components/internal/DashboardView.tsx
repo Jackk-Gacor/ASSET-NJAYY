@@ -1,391 +1,422 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
-  Database,
-  Compass,
-  Layers,
-  HardHat,
-  CheckCircle2,
-  AlertCircle,
-  TrendingUp,
-  MapPin,
-  Clock,
-  ArrowRight,
-  PlusCircle,
   Search,
+  RotateCcw,
+  Database,
+  Settings,
+  GitFork,
+  MapPin,
+  BarChart2,
+  ArrowRight,
+  HelpCircle,
+  X,
+  CheckCircle2,
+  ExternalLink,
+  ShieldCheck,
   Activity,
-  FileCheck,
+  Layers,
 } from 'lucide-react';
 
 export const DashboardView: React.FC = () => {
-  const {
-    currentUser,
-    dataCoreList,
-    feederList,
-    uplinkList,
-    fieldReportList,
-    activityLogs,
-    setCurrentView,
-    openCoreDetail,
-  } = useApp();
+  const { setCurrentView } = useApp();
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
-  // KPI Calculations
-  const totalCore = dataCoreList.length;
-  const totalFeeder = feederList.length;
-  const totalUplink = uplinkList.length;
-  const totalField = fieldReportList.length;
-  const totalApprovedWig = dataCoreList.filter(
-    c => c.status === 'Approved' || c.status === 'WIG'
-  ).length;
-
-  const totalPending = dataCoreList.filter(
-    c => c.status === 'In Review' || c.status === 'Pending Field' || c.status === 'Draft'
-  ).length;
-
-  // Breakdown by Wilayah
-  const regionCounts: Record<string, number> = {};
-  dataCoreList.forEach(c => {
-    regionCounts[c.region] = (regionCounts[c.region] || 0) + 1;
-  });
-
-  // Breakdown by Status
-  const statusCounts = {
-    Approved: dataCoreList.filter(c => c.status === 'Approved').length,
-    WIG: dataCoreList.filter(c => c.status === 'WIG').length,
-    InReview: dataCoreList.filter(c => c.status === 'In Review').length,
-    PendingField: dataCoreList.filter(c => c.status === 'Pending Field').length,
-    Draft: dataCoreList.filter(c => c.status === 'Draft').length,
-  };
+  // Formatted date string (e.g., "20 MEI 2025" or dynamic current date)
+  const currentDateStr = new Date()
+    .toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+    .toUpperCase();
 
   return (
-    <div className="space-y-6">
-      
-      {/* Top Greeting & Operational State */}
-      <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-sky-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>SISTEM MONITORING ASSET MALANG RAYA · ONLINE</span>
+    <div className="space-y-8 pb-12 text-slate-800">
+
+      {/* ========================================================= */}
+      {/* 1. HERO SECTION                                           */}
+      {/* ========================================================= */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pt-1">
+        
+        {/* Left: Overview kicker, headline, and subtitle */}
+        <div className="max-w-2xl space-y-2.5">
+          <div className="text-xs font-bold text-blue-600 tracking-wider uppercase">
+            OVERVIEW • {currentDateStr || '20 MEI 2025'}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Selamat Datang, {currentUser.name}
+
+          <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+            Selamat datang di Network Command.
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Role Akses: <strong className="text-sky-300 font-semibold">{currentUser.role}</strong> · {currentUser.department}
+
+          <p className="text-slate-500 text-sm sm:text-base leading-relaxed max-w-xl">
+            Pantau integritas data dan aktivitas aset wilayah Malang dalam satu ruang.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        {/* Right: Big CTA Button "Cari Data Core" */}
+        <div className="shrink-0">
           <button
             onClick={() => setCurrentView('search')}
-            className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg shadow-sm transition-colors flex items-center gap-2"
+            className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-base rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 transition-all duration-200 flex items-center justify-center gap-3.5 group"
           >
-            <Search className="w-4 h-4" />
-            <span>Cari Data Core Cepat</span>
+            <Search className="w-5 h-5 text-blue-100 group-hover:scale-110 transition-transform" />
+            <span>Cari Data Core</span>
           </button>
-          <button
-            onClick={() => setCurrentView('field')}
-            className="px-4 py-2 text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors flex items-center gap-2"
-          >
-            <HardHat className="w-4 h-4 text-amber-400" />
-            <span>Input Field Report</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 5 Enterprise KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
-        
-        {/* KPI 1: Data Core */}
-        <div 
-          onClick={() => setCurrentView('search')}
-          className="bg-slate-950/80 border border-slate-800 hover:border-blue-500/50 rounded-xl p-4 sm:p-5 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-medium text-slate-400">Total Data Core</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Database className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <p className="text-2xl sm:text-3xl font-extrabold text-white font-mono tabular-nums">
-              {totalCore}
-            </p>
-            <p className="text-[11px] text-slate-400 mt-1">Titik OLT / POP Terdata</p>
-          </div>
-        </div>
-
-        {/* KPI 2: Feeder */}
-        <div 
-          onClick={() => setCurrentView('engineering-feeder')}
-          className="bg-slate-950/80 border border-slate-800 hover:border-sky-500/50 rounded-xl p-4 sm:p-5 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-medium text-slate-400">Total Feeder</span>
-            <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Compass className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <p className="text-2xl sm:text-3xl font-extrabold text-white font-mono tabular-nums">
-              {totalFeeder}
-            </p>
-            <p className="text-[11px] text-slate-400 mt-1">Jalur Distribusi Aktif</p>
-          </div>
-        </div>
-
-        {/* KPI 3: Uplink */}
-        <div 
-          onClick={() => setCurrentView('engineering-uplink')}
-          className="bg-slate-950/80 border border-slate-800 hover:border-cyan-500/50 rounded-xl p-4 sm:p-5 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-medium text-slate-400">Total Uplink</span>
-            <div className="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Layers className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <p className="text-2xl sm:text-3xl font-extrabold text-white font-mono tabular-nums">
-              {totalUplink}
-            </p>
-            <p className="text-[11px] text-slate-400 mt-1">Pipa Data 10G - 40G</p>
-          </div>
-        </div>
-
-        {/* KPI 4: Field Report */}
-        <div 
-          onClick={() => setCurrentView('field')}
-          className="bg-slate-950/80 border border-slate-800 hover:border-amber-500/50 rounded-xl p-4 sm:p-5 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-medium text-slate-400">Laporan Field</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <HardHat className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <p className="text-2xl sm:text-3xl font-extrabold text-white font-mono tabular-nums">
-              {totalField}
-            </p>
-            <p className="text-[11px] text-slate-400 mt-1">Log Inspeksi Lapangan</p>
-          </div>
-        </div>
-
-        {/* KPI 5: Approved/WIG */}
-        <div 
-          onClick={() => setCurrentView('data-core')}
-          className="col-span-2 lg:col-span-1 bg-slate-950/80 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-4 sm:p-5 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-medium text-slate-400">Approved / WIG</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <p className="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono tabular-nums">
-              {totalApprovedWig}
-            </p>
-            <p className="text-[11px] text-slate-400 mt-1">
-              {Math.round((totalApprovedWig / totalCore) * 100)}% Tersertifikasi
-            </p>
-          </div>
         </div>
 
       </div>
 
-      {/* Visualizations Section: 2 Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* ========================================================= */}
+      {/* 2. NETWORK SNAPSHOT NOTICE CARD                           */}
+      {/* ========================================================= */}
+      <div className="bg-[#EBF3FF] border border-[#D5E5FE] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
         
-        {/* Left Column: Data Distribution by Wilayah & Status Bar */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="flex items-start sm:items-center gap-3.5">
+          <div className="w-8 h-8 rounded-full bg-blue-100/80 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+            <RotateCcw className="w-4 h-4 text-blue-600" />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-slate-900 leading-tight">
+              Network snapshot stabil
+            </h4>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Seluruh visualisasi menggunakan data simulasi, bukan jaringan aktual.
+            </p>
+          </div>
+        </div>
+
+        <div className="shrink-0 self-start sm:self-center">
+          <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider text-blue-600 bg-white/90 border border-blue-100 uppercase shadow-xs">
+            CONTOH DATA
+          </span>
+        </div>
+
+      </div>
+
+      {/* ========================================================= */}
+      {/* 3. 5 KPI CARDS (CLEAN & GENEROUS WHITESPACE)              */}
+      {/* ========================================================= */}
+      <div className="space-y-5">
+        
+        {/* Row 1: 3 Equal Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           
-          {/* Status Breakdown Bar & Cards */}
-          <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
+          {/* KPI 1: Total Data Core */}
+          <div
+            onClick={() => setCurrentView('search')}
+            className="bg-white border border-slate-200/80 hover:border-blue-400/60 rounded-2xl p-6 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer group"
+          >
+            <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-base font-bold text-white">Status Kelengkapan Data Core</h3>
-                <p className="text-xs text-slate-400">Perbandingan Approved, WIG, dan status verifikasi</p>
-              </div>
-              <span className="text-xs font-mono text-slate-400">Total: {totalCore} Node</span>
-            </div>
-
-            {/* Segmented bar */}
-            <div className="h-4 w-full rounded-full overflow-hidden flex bg-slate-800 my-4">
-              <div 
-                style={{ width: `${(statusCounts.Approved / totalCore) * 100}%` }}
-                className="bg-emerald-500" 
-                title={`Approved: ${statusCounts.Approved}`}
-              />
-              <div 
-                style={{ width: `${(statusCounts.WIG / totalCore) * 100}%` }}
-                className="bg-blue-500" 
-                title={`WIG: ${statusCounts.WIG}`}
-              />
-              <div 
-                style={{ width: `${(statusCounts.InReview / totalCore) * 100}%` }}
-                className="bg-amber-500" 
-                title={`In Review: ${statusCounts.InReview}`}
-              />
-              <div 
-                style={{ width: `${(statusCounts.PendingField / totalCore) * 100}%` }}
-                className="bg-rose-500" 
-                title={`Pending Field: ${statusCounts.PendingField}`}
-              />
-              <div 
-                style={{ width: `${(statusCounts.Draft / totalCore) * 100}%` }}
-                className="bg-slate-600" 
-                title={`Draft: ${statusCounts.Draft}`}
-              />
-            </div>
-
-            {/* Legend with tabular numbers */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 text-xs">
-              <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span>Approved</span>
+                <span className="text-xs font-medium text-slate-500">
+                  Total Data Core
+                </span>
+                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+                  8
                 </div>
-                <p className="text-lg font-bold font-mono text-white mt-1 tabular-nums">
-                  {statusCounts.Approved}
-                </p>
-              </div>
-
-              <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                <div className="flex items-center gap-1.5 text-blue-400 font-semibold">
-                  <span className="w-2 h-2 rounded-full bg-blue-500" />
-                  <span>WIG</span>
+                <div className="text-xs font-semibold text-emerald-600 mt-1 flex items-center gap-1">
+                  <span>+8.2%</span>
                 </div>
-                <p className="text-lg font-bold font-mono text-white mt-1 tabular-nums">
-                  {statusCounts.WIG}
-                </p>
               </div>
-
-              <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                <div className="flex items-center gap-1.5 text-amber-400 font-semibold">
-                  <span className="w-2 h-2 rounded-full bg-amber-500" />
-                  <span>In Review</span>
-                </div>
-                <p className="text-lg font-bold font-mono text-white mt-1 tabular-nums">
-                  {statusCounts.InReview}
-                </p>
-              </div>
-
-              <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                <div className="flex items-center gap-1.5 text-rose-400 font-semibold">
-                  <span className="w-2 h-2 rounded-full bg-rose-500" />
-                  <span>Pending Field</span>
-                </div>
-                <p className="text-lg font-bold font-mono text-white mt-1 tabular-nums">
-                  {statusCounts.PendingField}
-                </p>
-              </div>
-
-              <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                <div className="flex items-center gap-1.5 text-slate-400 font-semibold">
-                  <span className="w-2 h-2 rounded-full bg-slate-500" />
-                  <span>Draft</span>
-                </div>
-                <p className="text-lg font-bold font-mono text-white mt-1 tabular-nums">
-                  {statusCounts.Draft}
-                </p>
+              <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Database className="w-5 h-5" />
               </div>
             </div>
           </div>
 
-          {/* Regional Distribution Chart */}
-          <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white">Distribusi Data Core per Wilayah</h3>
-              <button
-                onClick={() => setCurrentView('network-map')}
-                className="text-xs text-sky-400 hover:text-sky-300 font-semibold flex items-center gap-1"
-              >
-                <span>Buka Network Map</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+          {/* KPI 2: Total Feeder */}
+          <div
+            onClick={() => setCurrentView('engineering-feeder')}
+            className="bg-white border border-slate-200/80 hover:border-blue-400/60 rounded-2xl p-6 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer group"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-xs font-medium text-slate-500">
+                  Total Feeder
+                </span>
+                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+                  36
+                </div>
+                <div className="text-xs font-semibold text-emerald-600 mt-1 flex items-center gap-1">
+                  <span>+4 baru</span>
+                </div>
+              </div>
+              <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Settings className="w-5 h-5" />
+              </div>
             </div>
+          </div>
 
-            <div className="space-y-3 pt-2">
-              {Object.entries(regionCounts).map(([region, count]) => {
-                const percentage = Math.round((count / totalCore) * 100);
-                return (
-                  <div key={region} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-300 font-medium">{region}</span>
-                      <span className="font-mono text-slate-400">
-                        <strong className="text-white font-bold tabular-nums">{count}</strong> data ({percentage}%)
-                      </span>
-                    </div>
-                    <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
-                      <div
-                        style={{ width: `${percentage}%` }}
-                        className="h-full bg-gradient-to-r from-blue-600 to-sky-400 rounded-full"
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+          {/* KPI 3: Total Uplink */}
+          <div
+            onClick={() => setCurrentView('engineering-uplink')}
+            className="bg-white border border-slate-200/80 hover:border-blue-400/60 rounded-2xl p-6 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer group"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-xs font-medium text-slate-500">
+                  Total Uplink
+                </span>
+                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+                  24
+                </div>
+                <div className="text-xs font-semibold text-teal-600 mt-1 flex items-center gap-1">
+                  <span>98% lengkap</span>
+                </div>
+              </div>
+              <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <GitFork className="w-5 h-5" />
+              </div>
             </div>
           </div>
 
         </div>
 
-        {/* Right Column: Recent Activity Logs & Quick List */}
-        <div className="lg:col-span-5 space-y-6">
+        {/* Row 2: 2 Cards (same column width, leaving spacious whitespace on the 3rd spot) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           
-          <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-6 space-y-4 flex flex-col h-full justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                <div className="flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-sky-400" />
-                  <h3 className="text-base font-bold text-white">Aktivitas Terkini (Recent Activity)</h3>
+          {/* KPI 4: Field Report */}
+          <div
+            onClick={() => setCurrentView('field')}
+            className="bg-white border border-slate-200/80 hover:border-blue-400/60 rounded-2xl p-6 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer group"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-xs font-medium text-slate-500">
+                  Field Report
+                </span>
+                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+                  18
                 </div>
-                <span className="text-[10px] font-mono text-slate-500 uppercase">Live Log</span>
+                <div className="text-xs font-semibold text-teal-600 mt-1 flex items-center gap-1">
+                  <span>3 hari ini</span>
+                </div>
               </div>
-
-              <div className="divide-y divide-slate-800/80 mt-2 space-y-2">
-                {activityLogs.slice(0, 6).map(log => (
-                  <div key={log.id} className="pt-2.5 first:pt-1">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-xs font-semibold text-slate-200">
-                        {log.action}
-                      </p>
-                      <span className="text-[10px] text-slate-500 shrink-0 font-mono">
-                        {log.timestamp.split(' ')[0]}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-400">
-                      <span className="text-sky-400 font-medium">{log.user}</span>
-                      <span>·</span>
-                      <span className="font-mono text-slate-400">{log.entity}</span>
-                    </div>
-                  </div>
-                ))}
+              <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <MapPin className="w-5 h-5" />
               </div>
             </div>
-
-            {/* Quick jump to Search Engine */}
-            <div className="mt-4 pt-4 border-t border-slate-800/80 p-3 rounded-xl bg-slate-900 border border-slate-800">
-              <p className="text-xs font-bold text-white">Butuh menemukan Data Core dengan cepat?</p>
-              <p className="text-[11px] text-slate-400 mt-0.5">
-                Cari berdasarkan OLT, POP, Hostname, atau nama rute di search engine interaktif.
-              </p>
-              <button
-                onClick={() => setCurrentView('search')}
-                className="mt-3 w-full py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg flex items-center justify-center gap-2 transition-colors"
-              >
-                <Search className="w-3.5 h-3.5" />
-                <span>Buka Search Engine Data Core</span>
-              </button>
-            </div>
-
           </div>
+
+          {/* KPI 5: Approved / WIG */}
+          <div
+            onClick={() => setCurrentView('reports')}
+            className="bg-white border border-slate-200/80 hover:border-blue-400/60 rounded-2xl p-6 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer group"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-xs font-medium text-slate-500">
+                  Approved / WIG
+                </span>
+                <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-3">
+                  45
+                </div>
+                <div className="text-xs font-semibold text-teal-600 mt-1 flex items-center gap-1">
+                  <span>92.4%</span>
+                </div>
+              </div>
+              <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <BarChart2 className="w-5 h-5" />
+              </div>
+            </div>
+          </div>
+
+          {/* Empty 3rd column to maintain generous whitespace exactly like reference */}
+          <div className="hidden lg:block pointer-events-none" />
 
         </div>
 
       </div>
+
+      {/* ========================================================= */}
+      {/* 4. NETWORK OVERVIEW (CLEAN TOPOLOGY SUMMARY)             */}
+      {/* ========================================================= */}
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
+        
+        {/* Header of Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+          <div>
+            <h3 className="text-lg font-bold text-slate-900">
+              Network Overview
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Status konektivitas cincin backbone & distribusi optik Malang Raya.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full self-start sm:self-center">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Kondisi Jaringan: Optimal (Latensi &lt; 2ms)</span>
+          </div>
+        </div>
+
+        {/* Minimal Schematic Ring Diagram (as requested in spec) */}
+        <div 
+          onClick={() => setCurrentView('network-map')}
+          className="py-6 px-4 flex flex-col items-center justify-center cursor-pointer group/diag rounded-xl hover:bg-slate-50/60 transition-colors"
+          title="Klik untuk membuka Network Map interaktif"
+        >
+          
+          <div className="w-full max-w-lg relative flex items-center justify-center py-4">
+            <svg
+              viewBox="0 0 460 170"
+              className="w-full h-auto max-h-44 text-blue-500 overflow-visible group-hover/diag:scale-[1.02] transition-transform"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {/* Ring Connections Lines */}
+              <path
+                d="M 100 85 L 175 35 L 285 35 L 360 85 L 285 135 L 175 135 Z"
+                stroke="#CBD5E1"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+
+              {/* Active Optical Pulse Path */}
+              <path
+                d="M 100 85 L 175 35 L 285 35 L 360 85 L 285 135 L 175 135 Z"
+                stroke="#3B82F6"
+                strokeWidth="2.5"
+                strokeDasharray="10 8"
+                className="animate-[dash_20s_linear_infinite]"
+              />
+
+              {/* Spur Line to Backbone (as indicated in ASCII diagram) */}
+              <line
+                x1="360"
+                y1="85"
+                x2="430"
+                y2="85"
+                stroke="#3B82F6"
+                strokeWidth="2.5"
+                strokeDasharray="6 4"
+              />
+
+              {/* Node 1: Malang Kota (West) */}
+              <circle cx="100" cy="85" r="9" fill="#1D4ED8" />
+              <circle cx="100" cy="85" r="15" fill="#3B82F6" fillOpacity="0.2" />
+              <text x="100" y="112" textAnchor="middle" fill="#475569" fontSize="10" fontWeight="600" fontFamily="sans-serif">
+                Malang Kota
+              </text>
+
+              {/* Node 2: Singosari (North-West) */}
+              <circle cx="175" cy="35" r="7.5" fill="#2563EB" />
+              <text x="175" y="23" textAnchor="middle" fill="#475569" fontSize="10" fontWeight="600" fontFamily="sans-serif">
+                Singosari
+              </text>
+
+              {/* Node 3: Lawang (North-East) */}
+              <circle cx="285" cy="35" r="7.5" fill="#2563EB" />
+              <text x="285" y="23" textAnchor="middle" fill="#475569" fontSize="10" fontWeight="600" fontFamily="sans-serif">
+                Lawang
+              </text>
+
+              {/* Node 4: Kepanjen (East Hub) */}
+              <circle cx="360" cy="85" r="9" fill="#1D4ED8" />
+              <circle cx="360" cy="85" r="15" fill="#3B82F6" fillOpacity="0.2" />
+              <text x="360" y="112" textAnchor="middle" fill="#475569" fontSize="10" fontWeight="600" fontFamily="sans-serif">
+                Kepanjen
+              </text>
+
+              {/* Node 5: Turen & Dampit (Spur Extension) */}
+              <circle cx="430" cy="85" r="6.5" fill="#0284C7" />
+              <text x="430" y="105" textAnchor="middle" fill="#475569" fontSize="9" fontWeight="600" fontFamily="sans-serif">
+                Turen / Dampit
+              </text>
+
+              {/* Node 6: Batu (South-West) */}
+              <circle cx="175" cy="135" r="7.5" fill="#2563EB" />
+              <text x="175" y="153" textAnchor="middle" fill="#475569" fontSize="10" fontWeight="600" fontFamily="sans-serif">
+                Kota Batu
+              </text>
+
+              {/* Node 7: Malang Selatan (South-East) */}
+              <circle cx="285" cy="135" r="7.5" fill="#2563EB" />
+              <text x="285" y="153" textAnchor="middle" fill="#475569" fontSize="10" fontWeight="600" fontFamily="sans-serif">
+                Malang Selatan
+              </text>
+            </svg>
+          </div>
+
+          <div className="mt-3 text-xs font-mono font-bold tracking-widest text-slate-600 uppercase">
+            Malang Network
+          </div>
+
+        </div>
+
+        {/* CTA to Network Map */}
+        <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-100">
+          <p className="text-xs text-slate-500">
+            Ingin mengeksplorasi koordinat geografis OLT, POP, dan redaman rute secara interaktif?
+          </p>
+          <button
+            onClick={() => setCurrentView('network-map')}
+            className="text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100/80 px-4 py-2.5 rounded-xl transition-colors inline-flex items-center gap-1.5 self-start sm:self-auto shrink-0 group"
+          >
+            <span>Lihat Network Map</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+          </button>
+        </div>
+
+      </div>
+
+      {/* ========================================================= */}
+      {/* 5. FLOATING HELP BUTTON "?" (AS SHOWN IN SCREENSHOT)     */}
+      {/* ========================================================= */}
+      <button
+        onClick={() => setShowHelpModal(true)}
+        className="fixed bottom-6 right-6 w-11 h-11 rounded-full bg-white shadow-lg border border-slate-200 text-slate-700 font-bold text-base flex items-center justify-center hover:bg-slate-50 hover:text-blue-600 hover:shadow-xl transition-all duration-200 z-40"
+        title="Bantuan Navigasi Network Command"
+      >
+        ?
+      </button>
+
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-blue-600" />
+                <h3 className="font-bold text-slate-900 text-base">Bantuan Network Command</h3>
+              </div>
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Dashboard ini dirancang untuk memberikan monitoring ringkas dan cepat tanpa membebani Anda dengan informasi berlebih:
+            </p>
+
+            <div className="space-y-2 text-xs">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                <strong className="text-slate-900 block font-semibold">Cari Data Core</strong>
+                <span className="text-slate-500">Pencarian cepat untuk mengecek OLT, POP, redaman, dan dokumen SID/Visio.</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                <strong className="text-slate-900 block font-semibold">5 KPI Utama</strong>
+                <span className="text-slate-500">Ringkasan titik core, jalur feeder aktif, pipa uplink, field report, dan status WIG.</span>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                <strong className="text-slate-900 block font-semibold">Network Overview</strong>
+                <span className="text-slate-500">Visualisasi topologi ring Malang. Klik 'Lihat Network Map' untuk peta GIS lengkap.</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowHelpModal(false)}
+              className="w-full py-2.5 bg-blue-600 text-white rounded-xl text-xs font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Mengerti, Tutup
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

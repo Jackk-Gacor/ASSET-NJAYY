@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { PublicNavbar } from './components/public/PublicNavbar';
 import { PublicHero } from './components/public/PublicHero';
 import { PublicStorytelling } from './components/public/PublicStorytelling';
+import { PublicTeamSection } from './components/public/PublicTeamSection';
 import { PublicVisiMisi } from './components/public/PublicVisiMisi';
 import { PublicAboutAsset } from './components/public/PublicAboutAsset';
 import { PublicFooter } from './components/public/PublicFooter';
@@ -22,6 +23,13 @@ import { DataCoreDetailModal } from './components/internal/DataCoreDetailModal';
 
 const AppContent: React.FC = () => {
   const { isLoggedIn, currentView } = useApp();
+  const [quotaExceeded, setQuotaExceeded] = useState(false);
+
+  useEffect(() => {
+    const handleQuota = () => setQuotaExceeded(true);
+    window.addEventListener('gmp-quota-exceeded', handleQuota);
+    return () => window.removeEventListener('gmp-quota-exceeded', handleQuota);
+  }, []);
 
   // If user is logged in and on an internal view
   const isInternalView =
@@ -42,6 +50,22 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col font-sans">
+      {quotaExceeded && (
+        <div className="bg-amber-50 border-b border-amber-200 text-amber-900 px-4 py-2.5 text-xs md:text-sm text-center sticky top-0 z-50 shadow-sm">
+          <span>
+            Google Maps Platform quota reached. If you are the app owner, visit{' '}
+            <a
+              href="https://developers.google.com/maps/ai/ai-studio?utm_campaign=gmp_mcp_codeassist_v1_aistudio#quota_exceeded_errors"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline font-semibold text-amber-950 hover:text-amber-800"
+            >
+              maps developer site
+            </a>{' '}
+            for instructions to update your account.
+          </span>
+        </div>
+      )}
       {isInternalView ? (
         <InternalLayout>
           {currentView === 'dashboard' && <DashboardView />}
@@ -63,9 +87,11 @@ const AppContent: React.FC = () => {
             {currentView === 'home' && (
               <>
                 <PublicHero />
+                <PublicTeamSection />
                 <PublicStorytelling />
               </>
             )}
+            {currentView === 'team' && <PublicTeamSection />}
             {currentView === 'visi-misi' && <PublicVisiMisi />}
             {currentView === 'about-asset' && <PublicAboutAsset />}
           </main>
