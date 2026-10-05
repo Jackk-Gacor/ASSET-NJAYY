@@ -1,0 +1,6 @@
+{
+  "name": "PLN Icon Plus Asset Malang - Network & Asset Reporting",
+  "description": "Digital Hub Divisi Asset PT PLN Icon Plus Kantor Perwakilan Malang: Portal Pengelolaan Data Core, Topologi Jaringan Fiber Optic, Engineering, dan Field Reporting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
