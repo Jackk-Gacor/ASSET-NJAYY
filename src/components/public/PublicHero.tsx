@@ -114,7 +114,7 @@ export const PublicHero: React.FC = () => {
               <div className="flex flex-wrap items-center gap-2.5 pt-2 text-xs font-semibold text-slate-600">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100/90 border border-slate-200/70 text-slate-700">
                   <Check className="w-3.5 h-3.5 text-blue-600 stroke-[2.5]" />
-                  <span>Engineering</span>
+                  <span>Drawing Data</span>
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100/90 border border-slate-200/70 text-slate-700">
                   <Check className="w-3.5 h-3.5 text-blue-600 stroke-[2.5]" />
@@ -411,7 +411,7 @@ export const PublicHero: React.FC = () => {
                 {/* Title & Description */}
                 <div>
                   <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                    Engineering
+                    Drawing Data
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
                     Pengelolaan drawing jaringan yang terstruktur dalam satu akses kerja.
@@ -443,7 +443,7 @@ export const PublicHero: React.FC = () => {
                   onClick={() => setIsLoginModalOpen(true)}
                   className="w-full py-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 text-slate-700 text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <span>Akses Alur Engineering</span>
+                  <span>Akses Alur Drawing Data</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>

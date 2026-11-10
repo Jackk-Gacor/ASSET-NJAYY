@@ -41,12 +41,12 @@ export const PublicStorytelling: React.FC = () => {
     {
       id: 'engineering',
       stepNum: '03',
-      title: 'Engineering, GIS & Single Line Diagram',
+      title: 'Drawing Data, GIS & Single Line Diagram',
       subtitle: 'Pemetaan Spasial & Topologi Desain',
       icon: Compass,
       color: 'border-sky-500 text-sky-600 bg-sky-50',
       description:
-        'Tim Engineering menerjemahkan data lapangan dan alokasi core ke dalam format spasial GIS (KMZ/KML, Geodatabase GDB) serta diagram skematik Single Line Diagram (SLD Visio) untuk menjamin arsitektur jaringan terlindungi sistem redundansi ring.',
+        'Tim Drawing Data menerjemahkan data lapangan dan alokasi core ke dalam format spasial GIS (KMZ/KML, Geodatabase GDB) serta diagram skematik Single Line Diagram (SLD Visio) untuk menjamin arsitektur jaringan terlindungi sistem redundansi ring.',
       details: [
         'Pembuatan peta jalur kabel optik berbasis KMZ & ArcGDB',
         'Skema Single Line Diagram (SLD) OLT hingga FDT',
@@ -82,7 +82,7 @@ export const PublicStorytelling: React.FC = () => {
             Sinergi Tiga Pilar Divisi Asset
           </p>
           <h2 className="mt-2 text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Bagaimana Data, Engineering, dan Field Saling Terkoneksi
+            Bagaimana Data, Drawing Data, dan Field Saling Terkoneksi
           </h2>
           <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
             Keandalan jaringan fiber optic tidak terjadi secara kebetulan. Di balik setiap megabit data internet yang mengalir, ada kerja teliti tim aset yang memetakan, mendokumentasikan, dan memvalidasi setiap jengkal kabel di wilayah Malang Raya.

@@ -348,7 +348,7 @@ export const DataCoreDetailModal: React.FC = () => {
           {activeTab === 'relations' && (
             <div className="space-y-4">
               <p className="text-xs text-slate-500">
-                Keterkaitan 3 pilar engineering antara Core, Feeder, Uplink, dan Ring proteksi:
+                Keterkaitan 3 pilar Drawing Data antara Core, Feeder, Uplink, dan Ring proteksi:
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

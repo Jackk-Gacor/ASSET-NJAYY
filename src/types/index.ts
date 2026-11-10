@@ -64,32 +64,42 @@ export interface DataCoreItem {
   notes?: string;
 }
 
+export type E2EStatusReport = 'DONE' | 'PROGRESS';
+
+export type E2EPic = 'DIMAS' | 'KANAYA' | 'JACK' | 'ALIFIA' | 'NOVI' | string;
+
 export interface FeederItem {
   id: string;
   feederCode: string;
-  name: string;
-  popOrigin: string;
-  oltOrigin: string;
-  totalCores: number;
-  usedCores: number;
-  lengthKm: number;
-  status: 'Active' | 'Maintenance' | 'Planned';
-  targetSid: string;
-  relatedCoreId: string;
-  lastAudit: string;
+  hostnameOlt: string;
+  statusReport: E2EStatusReport;
+  actualDone: string;
+  reportDone: string;
+  pic: E2EPic;
+  datacoreVisio?: string;
+  datacoreVisioUrl?: string;
+  mymaps?: string;
+  mymapsUrl?: string;
+  keterangan: string;
+  relatedCoreId?: string;
 }
 
 export interface UplinkItem {
   id: string;
   uplinkCode: string;
-  oltHostname: string;
-  popDestination: string;
-  bandwidthGbps: number;
-  status: 'Operational' | 'Standby' | 'Degraded';
-  fiberType: string;
-  gponPort: string;
-  relatedCoreId: string;
-  documentsCount: number;
+  hostnameOlt: string;
+  statusReport: E2EStatusReport;
+  actualDone: string;
+  reportDone: string;
+  pic: E2EPic;
+  datacoreVisio?: string;
+  datacoreVisioUrl?: string;
+  mymaps?: string;
+  mymapsUrl?: string;
+  schematicE2E?: string;
+  schematicE2EUrl?: string;
+  keterangan: string;
+  relatedCoreId?: string;
 }
 
 export interface SidItem {

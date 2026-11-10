@@ -22,7 +22,7 @@ export const PublicAboutAsset: React.FC = () => {
     },
     {
       id: 'activities',
-      title: 'Bab 3: Aktivitas & Engineering',
+      title: 'Bab 3: Aktivitas & Drawing Data',
       subtitle: 'Digital CAD, GIS & Alur Kerja',
       icon: Workflow,
     },
@@ -188,7 +188,7 @@ export const PublicAboutAsset: React.FC = () => {
                       <div className="w-10 h-10 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
                         E
                       </div>
-                      <h3 className="text-base font-bold text-slate-900">Tim Engineering GIS</h3>
+                      <h3 className="text-base font-bold text-slate-900">Tim Drawing Data GIS</h3>
                       <p className="text-xs text-slate-500 font-mono">Penggambaran & SLD Drafter</p>
                       <p className="text-xs text-slate-600 leading-relaxed">
                         Bertanggung jawab atas pemodelan arsitektur optik dalam format spasial GIS (KMZ, Shapefile, Geodatabase) dan skema Single Line Diagram (SLD) di Microsoft Visio.
@@ -247,7 +247,7 @@ export const PublicAboutAsset: React.FC = () => {
                       untuk bekerja bersama.
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                      Personil tim Engineering & Intern Divisi Asset PT PLN Icon Plus Kantor Perwakilan Malang
+                      Personil tim Drawing Data & Intern Divisi Asset PT PLN Icon Plus Kantor Perwakilan Malang
                     </p>
                   </div>
 
@@ -293,10 +293,10 @@ export const PublicAboutAsset: React.FC = () => {
                       CHAPTER 03 · TECHNICAL CAPABILITIES
                     </span>
                     <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                      Engineering, Penggambaran & Digital GIS
+                      Drawing Data, Penggambaran & Digital GIS
                     </h2>
                     <p className="text-sm text-slate-600 leading-relaxed">
-                      Engineering bukan sekadar menggambar garis di atas peta, melainkan merancang sistem transmisi optik yang memiliki ketahanan terhadap gangguan. Di wilayah Malang yang dinamis dengan pembangunan infrastruktur jalan tol, flyover, dan pelebaran jalan kota, tim engineering aktif merevisi dan menyesuaikan jalur kabel.
+                      Drawing Data bukan sekadar menggambar garis di atas peta, melainkan merancang sistem transmisi optik yang memiliki ketahanan terhadap gangguan. Di wilayah Malang yang dinamis dengan pembangunan infrastruktur jalan tol, flyover, dan pelebaran jalan kota, tim Drawing Data aktif merevisi dan menyesuaikan jalur kabel.
                     </p>
 
                     <div className="space-y-2.5">

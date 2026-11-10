@@ -36,7 +36,11 @@ import {
   Layers,
   ShieldCheck,
   Map,
+  Workflow,
+  FileSpreadsheet,
+  Link2,
 } from 'lucide-react';
+import { resolveTopologyForHostname, doesHostnameMatchMapTarget } from '../../utils/topologySync';
 
 const STORAGE_KEYS = [
   'recent_searches',
@@ -79,15 +83,19 @@ function findTopologyPath(startId: string, endId: string, nodes: NetworkNode[]):
 export const DataCoreSearch: React.FC = () => {
   const {
     dataCoreList,
+    feederList,
+    uplinkList,
     openCoreDetail,
     setCurrentView,
     showToast,
     mapFilterTarget,
     clearMapFilter,
+    navigateToMapNode,
+    navigateToDrawingItem,
   } = useApp();
 
-  // Search Engine Mode: Data Core & OLT | Topology POP Nodes | Topology Path Tracing
-  const [searchMode, setSearchMode] = useState<'core' | 'pop' | 'trace'>('core');
+  // Search Engine Mode: Hostname & Drawing E2E | Data Core & OLT | Topology POP Nodes | Topology Path Tracing
+  const [searchMode, setSearchMode] = useState<'drawing' | 'core' | 'pop' | 'trace'>('drawing');
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -95,11 +103,14 @@ export const DataCoreSearch: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
   const [selectedRing, setSelectedRing] = useState<string>('ALL');
+  const [selectedDrawingCategory, setSelectedDrawingCategory] = useState<'ALL' | 'E2E FEEDER' | 'E2E UPLINK'>('ALL');
+  const [selectedDrawingStatus, setSelectedDrawingStatus] = useState<'ALL' | 'DONE' | 'PROGRESS'>('ALL');
+  const [selectedDrawingPic, setSelectedDrawingPic] = useState<string>('ALL');
   const [hasKmzOnly, setHasKmzOnly] = useState(false);
   const [hasVisioOnly, setHasVisioOnly] = useState(false);
-  const [viewMode, setViewMode] = useState<'card' | 'table'>('card');
+  const [viewMode, setViewMode] = useState<'card' | 'table'>('table');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 10;
 
   // Topology Path Tracing state
   const [traceOriginId, setTraceOriginId] = useState<string>('NODE-GI-KBG'); // Default: Titik 0
@@ -348,6 +359,99 @@ export const DataCoreSearch: React.FC = () => {
       .filter((n): n is NetworkNode => Boolean(n));
   }, [calculatedPathIds]);
 
+  // Unified Drawing E2E rows (live-synced from feederList & uplinkList + topology)
+  const unifiedDrawingRows = useMemo(() => {
+    const feeders = feederList.map(f => ({
+      id: f.id,
+      category: 'E2E FEEDER' as const,
+      hostnameOlt: f.hostnameOlt,
+      statusReport: f.statusReport,
+      actualDone: f.actualDone,
+      reportDone: f.reportDone || '',
+      pic: f.pic,
+      datacoreVisio: f.datacoreVisio || '',
+      datacoreVisioUrl: f.datacoreVisioUrl || '',
+      mymaps: f.mymaps || '',
+      mymapsUrl: f.mymapsUrl || '',
+      schematicE2E: '',
+      schematicE2EUrl: '',
+      keterangan: f.keterangan,
+      topo: resolveTopologyForHostname(f.hostnameOlt, undefined, f.keterangan),
+    }));
+
+    const uplinks = uplinkList.map(u => ({
+      id: u.id,
+      category: 'E2E UPLINK' as const,
+      hostnameOlt: u.hostnameOlt,
+      statusReport: u.statusReport,
+      actualDone: u.actualDone,
+      reportDone: u.reportDone || '',
+      pic: u.pic,
+      datacoreVisio: u.datacoreVisio || '',
+      datacoreVisioUrl: u.datacoreVisioUrl || '',
+      mymaps: u.mymaps || '',
+      mymapsUrl: u.mymapsUrl || '',
+      schematicE2E: u.schematicE2E || '',
+      schematicE2EUrl: u.schematicE2EUrl || '',
+      keterangan: u.keterangan,
+      topo: resolveTopologyForHostname(u.hostnameOlt, u.schematicE2E, u.keterangan),
+    }));
+
+    return [...feeders, ...uplinks];
+  }, [feederList, uplinkList]);
+
+  const drawingPics = useMemo(() => {
+    const set = new Set<string>();
+    unifiedDrawingRows.forEach(r => r.pic && set.add(r.pic));
+    return Array.from(set).sort();
+  }, [unifiedDrawingRows]);
+
+  const filteredDrawingRows = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return unifiedDrawingRows.filter(row => {
+      if (mapFilterTarget && !doesHostnameMatchMapTarget(row.hostnameOlt, row.schematicE2E, row.keterangan, mapFilterTarget)) {
+        return false;
+      }
+
+      const matchQuery =
+        !q ||
+        row.hostnameOlt.toLowerCase().includes(q) ||
+        row.pic.toLowerCase().includes(q) ||
+        row.datacoreVisio.toLowerCase().includes(q) ||
+        row.mymaps.toLowerCase().includes(q) ||
+        row.schematicE2E.toLowerCase().includes(q) ||
+        row.keterangan.toLowerCase().includes(q) ||
+        row.topo.node.code.toLowerCase().includes(q) ||
+        row.topo.node.name.toLowerCase().includes(q) ||
+        row.topo.primaryRing.ringName.toLowerCase().includes(q);
+
+      const matchCategory = selectedDrawingCategory === 'ALL' || row.category === selectedDrawingCategory;
+      const matchStatus = selectedDrawingStatus === 'ALL' || row.statusReport === selectedDrawingStatus;
+      const matchPic = selectedDrawingPic === 'ALL' || row.pic === selectedDrawingPic;
+      const matchRing =
+        selectedRing === 'ALL' ||
+        row.topo.rings.some(r => r.ringName === selectedRing || r.id === selectedRing);
+      const matchVisio = !hasVisioOnly || Boolean(row.datacoreVisio || row.datacoreVisioUrl);
+
+      return matchQuery && matchCategory && matchStatus && matchPic && matchRing && matchVisio;
+    });
+  }, [
+    unifiedDrawingRows,
+    mapFilterTarget,
+    searchQuery,
+    selectedDrawingCategory,
+    selectedDrawingStatus,
+    selectedDrawingPic,
+    selectedRing,
+    hasVisioOnly,
+  ]);
+
+  const drawingTotalPages = Math.ceil(filteredDrawingRows.length / itemsPerPage) || 1;
+  const paginatedDrawingRows = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredDrawingRows.slice(start, start + itemsPerPage);
+  }, [filteredDrawingRows, currentPage]);
+
   // Pagination for Data Core
   const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
   const paginatedData = useMemo(() => {
@@ -361,10 +465,30 @@ export const DataCoreSearch: React.FC = () => {
     setSelectedType('ALL');
     setSelectedStatus('ALL');
     setSelectedRing('ALL');
+    setSelectedDrawingCategory('ALL');
+    setSelectedDrawingStatus('ALL');
+    setSelectedDrawingPic('ALL');
     setHasKmzOnly(false);
     setHasVisioOnly(false);
     clearMapFilter();
     setCurrentPage(1);
+  };
+
+  const getDrawingPicBadgeClass = (pic: string) => {
+    switch (pic.toUpperCase()) {
+      case 'KANAYA':
+        return 'bg-blue-700 text-white';
+      case 'JACK':
+        return 'bg-slate-800 text-white';
+      case 'DIMAS':
+        return 'bg-teal-800 text-white';
+      case 'ALIFIA':
+        return 'bg-rose-200 text-rose-900';
+      case 'NOVI':
+        return 'bg-amber-800 text-white';
+      default:
+        return 'bg-indigo-700 text-white';
+    }
   };
 
   const getStatusBadge = (status: CoreStatus) => {
@@ -498,7 +622,29 @@ export const DataCoreSearch: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100">
           <button
             type="button"
-            onClick={() => setSearchMode('core')}
+            onClick={() => {
+              setSearchMode('drawing');
+              setCurrentPage(1);
+            }}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+              searchMode === 'drawing'
+                ? 'bg-blue-600 text-white shadow-2xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Hostname &amp; Drawing E2E</span>
+            <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${searchMode === 'drawing' ? 'bg-blue-500/50 text-white' : 'bg-slate-200 text-slate-700'}`}>
+              {filteredDrawingRows.length}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setSearchMode('core');
+              setCurrentPage(1);
+            }}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               searchMode === 'core'
                 ? 'bg-blue-600 text-white shadow-2xs'
@@ -781,7 +927,7 @@ export const DataCoreSearch: React.FC = () => {
 
             <div className="space-y-2 pt-1 border-t border-slate-100">
               <span className="block text-[10px] font-mono uppercase text-slate-500">
-                Dokumen Engineering:
+                Dokumen Drawing Data:
               </span>
               <label className="flex items-center gap-2 text-xs text-slate-600 cursor-pointer">
                 <input
@@ -822,7 +968,497 @@ export const DataCoreSearch: React.FC = () => {
 
         {/* ================= RIGHT MAIN RESULTS AREA ================= */}
         <div className="lg:col-span-8 xl:col-span-9 space-y-4">
-          
+
+          {/* ================= MODE 0: HOSTNAME & DRAWING E2E (3-WAY SYNC) ================= */}
+          {searchMode === 'drawing' && (
+            <div className="space-y-4">
+              {/* Filter Bar (Kategori E2E, Status Report, PIC) + View Toggle */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 text-xs shadow-xs">
+                <div className="flex flex-wrap items-center gap-2.5 flex-1">
+                  <div className="min-w-[140px]">
+                    <select
+                      value={selectedDrawingCategory}
+                      onChange={e => {
+                        setSelectedDrawingCategory(e.target.value as 'ALL' | 'E2E FEEDER' | 'E2E UPLINK');
+                        setCurrentPage(1);
+                      }}
+                      className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:outline-hidden focus:border-blue-500 text-xs font-semibold"
+                    >
+                      <option value="ALL">Semua Kategori E2E</option>
+                      <option value="E2E FEEDER">E2E FEEDER ({feederList.length})</option>
+                      <option value="E2E UPLINK">E2E UPLINK ({uplinkList.length})</option>
+                    </select>
+                  </div>
+
+                  <div className="min-w-[125px]">
+                    <select
+                      value={selectedDrawingStatus}
+                      onChange={e => {
+                        setSelectedDrawingStatus(e.target.value as 'ALL' | 'DONE' | 'PROGRESS');
+                        setCurrentPage(1);
+                      }}
+                      className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:outline-hidden focus:border-blue-500 text-xs"
+                    >
+                      <option value="ALL">Semua Status</option>
+                      <option value="DONE">DONE</option>
+                      <option value="PROGRESS">PROGRESS</option>
+                    </select>
+                  </div>
+
+                  <div className="min-w-[120px]">
+                    <select
+                      value={selectedDrawingPic}
+                      onChange={e => {
+                        setSelectedDrawingPic(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:outline-hidden focus:border-blue-500 text-xs"
+                    >
+                      <option value="ALL">Semua PIC</option>
+                      {drawingPics.map(pic => (
+                        <option key={pic} value={pic}>
+                          {pic}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {searchQuery && (
+                    <span className="text-slate-500 text-xs flex items-center gap-1.5 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">
+                      <span>Kueri:</span>
+                      <strong className="text-blue-700 font-mono font-semibold">"{searchQuery}"</strong>
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="hover:text-rose-600 ml-1 font-bold"
+                        title="Hapus filter kata kunci"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+                </div>
+
+                {/* View Switcher Buttons */}
+                <div className="flex items-center gap-3">
+                  <span className="text-slate-400 text-[11px] hidden sm:inline">
+                    Menampilkan {paginatedDrawingRows.length} dari {filteredDrawingRows.length} Hostname OLT
+                  </span>
+
+                  <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                    <button
+                      type="button"
+                      onClick={() => setViewMode('table')}
+                      className={`p-1.5 rounded-lg transition-colors ${
+                        viewMode === 'table' ? 'bg-white text-blue-600 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                      }`}
+                      title="Tampilan Tabel Drawing"
+                    >
+                      <List className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setViewMode('card')}
+                      className={`p-1.5 rounded-lg transition-colors ${
+                        viewMode === 'card' ? 'bg-white text-blue-600 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                      }`}
+                      title="Tampilan Kartu"
+                    >
+                      <Grid className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Drawing E2E Results */}
+              {filteredDrawingRows.length === 0 ? (
+                <div className="p-12 text-center bg-white border border-slate-200/80 rounded-2xl space-y-3 shadow-xs">
+                  <Search className="w-10 h-10 text-slate-400 mx-auto" />
+                  <h3 className="text-base font-bold text-slate-800">Tidak ada Hostname Drawing E2E yang cocok</h3>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    Coba ubah filter kategori, status DONE/PROGRESS, atau hapus filter peta aktif.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="px-4 py-2 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 transition-colors"
+                  >
+                    Reset Semua Filter
+                  </button>
+                </div>
+              ) : viewMode === 'table' ? (
+                <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
+                  <div className="px-4 py-3 bg-slate-50/90 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Workflow className="w-4 h-4 text-blue-600" />
+                      <h2 className="text-xs sm:text-sm font-extrabold tracking-wide text-slate-900 uppercase">
+                        DATA DRAWING E2E TERINTEGRASI (FEEDER &amp; UPLINK)
+                      </h2>
+                    </div>
+                    <span className="text-[11px] font-mono text-slate-500">
+                      Sinkron real-time · Drawing Data ↔ Search ↔ Ring Map
+                    </span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead className="bg-slate-100 text-slate-700 font-bold text-[11px] border-b border-slate-300">
+                        <tr>
+                          <th className="py-2.5 px-3 border-r border-slate-200 whitespace-nowrap">Hostname OLT</th>
+                          <th className="py-2.5 px-3 border-r border-slate-200 whitespace-nowrap text-center">Kategori</th>
+                          <th className="py-2.5 px-3 border-r border-slate-200 whitespace-nowrap text-center">Status Report</th>
+                          <th className="py-2.5 px-3 border-r border-slate-200 whitespace-nowrap text-center">Actual Done</th>
+                          <th className="py-2.5 px-3 border-r border-slate-200 whitespace-nowrap text-center">Report Done</th>
+                          <th className="py-2.5 px-3 border-r border-slate-200 whitespace-nowrap text-center">PIC</th>
+                          <th className="py-2.5 px-3 border-r border-slate-200 whitespace-nowrap">DATACORE VISIO</th>
+                          <th className="py-2.5 px-3 border-r border-slate-200 whitespace-nowrap">MYMAPS</th>
+                          <th className="py-2.5 px-3 border-r border-slate-200 whitespace-nowrap">Schematic E2E</th>
+                          <th className="py-2.5 px-3 border-r border-slate-200 whitespace-nowrap">Ring &amp; POP Topologi</th>
+                          <th className="py-2.5 px-3 border-r border-slate-200 whitespace-nowrap">Keterangan</th>
+                          <th className="py-2.5 px-3 whitespace-nowrap text-center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200 text-slate-800">
+                        {paginatedDrawingRows.map(row => (
+                          <tr key={`${row.category}-${row.id}`} className="hover:bg-blue-50/30 transition-colors">
+                            <td className="py-2 px-3 border-r border-slate-200 font-mono text-[11px] font-medium text-slate-900 whitespace-nowrap">
+                              <HighlightedText text={row.hostnameOlt} query={searchQuery} />
+                            </td>
+                            <td className="py-2 px-3 border-r border-slate-200 text-center whitespace-nowrap">
+                              <span
+                                className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold font-mono ${
+                                  row.category === 'E2E FEEDER'
+                                    ? 'bg-sky-50 text-sky-700 border border-sky-200'
+                                    : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                                }`}
+                              >
+                                {row.category}
+                              </span>
+                            </td>
+                            <td className="py-2 px-3 border-r border-slate-200 text-center whitespace-nowrap">
+                              <span
+                                className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide ${
+                                  row.statusReport === 'DONE'
+                                    ? 'bg-emerald-700 text-white'
+                                    : 'bg-amber-200 text-amber-900'
+                                }`}
+                              >
+                                {row.statusReport}
+                              </span>
+                            </td>
+                            <td className="py-2 px-3 border-r border-slate-200 text-center font-mono text-[11px] tabular-nums whitespace-nowrap">
+                              {row.actualDone || '-'}
+                            </td>
+                            <td className="py-2 px-3 border-r border-slate-200 text-center font-mono text-[11px] tabular-nums whitespace-nowrap text-slate-600">
+                              {row.reportDone || '-'}
+                            </td>
+                            <td className="py-2 px-3 border-r border-slate-200 text-center whitespace-nowrap">
+                              <span
+                                className={`inline-block px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${getDrawingPicBadgeClass(
+                                  row.pic
+                                )}`}
+                              >
+                                {row.pic}
+                              </span>
+                            </td>
+                            <td className="py-2 px-3 border-r border-slate-200 max-w-[180px] truncate">
+                              {row.datacoreVisioUrl ? (
+                                <a
+                                  href={row.datacoreVisioUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 text-[11px] text-blue-700 hover:text-blue-900 font-medium underline truncate max-w-full"
+                                  title={row.datacoreVisioUrl}
+                                >
+                                  <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                  <span className="truncate">{row.datacoreVisio || 'Buka Link Visio'}</span>
+                                  <ExternalLink className="w-3 h-3 shrink-0" />
+                                </a>
+                              ) : row.datacoreVisio ? (
+                                <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-700 font-medium truncate max-w-full">
+                                  <FileText className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                                  <span className="truncate">{row.datacoreVisio}</span>
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-slate-400 italic">Belum ada link</span>
+                              )}
+                            </td>
+                            <td className="py-2 px-3 border-r border-slate-200 whitespace-nowrap">
+                              {row.mymapsUrl ? (
+                                <a
+                                  href={row.mymapsUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-800 underline"
+                                  title={row.mymapsUrl}
+                                >
+                                  <span>{row.mymaps || 'Buka MyMaps'}</span>
+                                  <ExternalLink className="w-3 h-3" />
+                                </a>
+                              ) : row.mymaps ? (
+                                <span className="text-[11px] font-semibold text-blue-700">
+                                  {row.mymaps}
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-slate-400 italic">Belum ada link</span>
+                              )}
+                            </td>
+                            <td className="py-2 px-3 border-r border-slate-200 max-w-[200px] truncate">
+                              {row.schematicE2EUrl ? (
+                                <a
+                                  href={row.schematicE2EUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 text-[11px] text-rose-700 hover:text-rose-900 font-medium underline truncate max-w-full"
+                                  title={row.schematicE2EUrl}
+                                >
+                                  <span className="px-1 py-0.2 rounded bg-rose-600 text-white text-[9px] font-bold shrink-0">
+                                    PDF
+                                  </span>
+                                  <span className="truncate">{row.schematicE2E || 'Buka Schematic'}</span>
+                                  <ExternalLink className="w-3 h-3 shrink-0" />
+                                </a>
+                              ) : row.schematicE2E ? (
+                                <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-700 font-medium truncate max-w-full">
+                                  <span className="px-1 py-0.2 rounded bg-rose-600 text-white text-[9px] font-bold shrink-0">
+                                    PDF
+                                  </span>
+                                  <span className="truncate">{row.schematicE2E}</span>
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-slate-400">-</span>
+                              )}
+                            </td>
+                            <td className="py-2 px-3 border-r border-slate-200 whitespace-nowrap">
+                              <button
+                                type="button"
+                                onClick={() => navigateToMapNode(row.topo.node.id)}
+                                className="inline-flex flex-col text-left px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors cursor-pointer"
+                                title={`Fokus ke ${row.topo.node.name} di Network & Ring Map`}
+                              >
+                                <span className="text-[10px] font-mono font-bold text-blue-700 flex items-center gap-1">
+                                  <MapPin className="w-3 h-3 shrink-0" />
+                                  {row.topo.node.code.replace('_AREA45', '')}
+                                </span>
+                                <span className="text-[9px] text-slate-500 font-mono">
+                                  {row.topo.primaryRing.id}
+                                </span>
+                              </button>
+                            </td>
+                            <td className="py-2 px-3 border-r border-slate-200 text-[11px] text-slate-700 max-w-[220px] truncate" title={row.keterangan}>
+                              {row.keterangan || '-'}
+                            </td>
+                            <td className="py-2 px-3 text-center whitespace-nowrap">
+                              <div className="inline-flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => navigateToMapNode(row.topo.node.id)}
+                                  className="px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-200 text-[10px] font-bold transition-colors cursor-pointer flex items-center gap-1"
+                                  title="Lihat POP & Ring di Peta Topologi"
+                                >
+                                  <MapPin className="w-3 h-3" />
+                                  <span>Peta</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    navigateToDrawingItem(
+                                      row.category === 'E2E FEEDER' ? 'feeder' : 'uplink',
+                                      row.hostnameOlt
+                                    )
+                                  }
+                                  className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-800 text-slate-700 hover:text-white border border-slate-200 text-[10px] font-bold transition-colors cursor-pointer flex items-center gap-1"
+                                  title="Buka & Edit di Drawing Data"
+                                >
+                                  <Workflow className="w-3 h-3" />
+                                  <span>Drawing</span>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {paginatedDrawingRows.map(row => (
+                    <div
+                      key={`${row.category}-${row.id}`}
+                      className="bg-white border border-slate-200/80 hover:border-blue-400/60 rounded-2xl p-4 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-3"
+                    >
+                      <div className="space-y-2.5">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="space-y-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <span
+                                className={`px-2 py-0.5 rounded-md text-[10px] font-bold font-mono ${
+                                  row.category === 'E2E FEEDER'
+                                    ? 'bg-sky-50 text-sky-700 border border-sky-200'
+                                    : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                                }`}
+                              >
+                                {row.category}
+                              </span>
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${getDrawingPicBadgeClass(
+                                  row.pic
+                                )}`}
+                              >
+                                {row.pic}
+                              </span>
+                            </div>
+                            <h3 className="text-xs sm:text-sm font-mono font-bold text-slate-900 break-all">
+                              <HighlightedText text={row.hostnameOlt} query={searchQuery} />
+                            </h3>
+                          </div>
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase shrink-0 ${
+                              row.statusReport === 'DONE'
+                                ? 'bg-emerald-700 text-white'
+                                : 'bg-amber-200 text-amber-900'
+                            }`}
+                          >
+                            {row.statusReport}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200 text-[11px]">
+                          <div>
+                            <span className="text-[10px] text-slate-400 block">Actual Done</span>
+                            <span className="font-mono font-semibold text-slate-800">{row.actualDone || '-'}</span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-slate-400 block">Report Done</span>
+                            <span className="font-mono font-semibold text-slate-800">{row.reportDone || '-'}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 font-mono font-bold">
+                            <MapPin className="w-3 h-3" />
+                            {row.topo.node.code.replace('_AREA45', '')}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200 font-mono font-semibold">
+                            {row.topo.primaryRing.ringName}
+                          </span>
+                        </div>
+
+                        <div className="space-y-1 text-[11px] pt-1">
+                          <div className="flex items-center gap-1.5 truncate">
+                            <FileText className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                            {row.datacoreVisioUrl ? (
+                              <a
+                                href={row.datacoreVisioUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-700 hover:underline font-medium truncate"
+                              >
+                                {row.datacoreVisio || 'Buka Link Visio'}
+                              </a>
+                            ) : (
+                              <span className="text-slate-600 truncate">
+                                Visio: {row.datacoreVisio || 'Belum ada link'}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1.5 truncate">
+                            <Link2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            {row.mymapsUrl ? (
+                              <a
+                                href={row.mymapsUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-700 hover:underline font-medium truncate"
+                              >
+                                {row.mymaps || 'Buka MyMaps'}
+                              </a>
+                            ) : (
+                              <span className="text-slate-600 truncate">
+                                MyMaps: {row.mymaps || 'Belum ada link'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {row.keterangan && (
+                          <p className="text-[11px] text-slate-600 line-clamp-2 bg-slate-50/70 p-2 rounded-lg border border-slate-100">
+                            {row.keterangan}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="pt-2.5 border-t border-slate-100 flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => navigateToMapNode(row.topo.node.id)}
+                          className="flex-1 py-1.5 text-[11px] font-bold text-blue-700 hover:text-white bg-blue-50 hover:bg-blue-600 rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                        >
+                          <MapPin className="w-3.5 h-3.5" />
+                          <span>Lihat di Ring Map</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            navigateToDrawingItem(
+                              row.category === 'E2E FEEDER' ? 'feeder' : 'uplink',
+                              row.hostnameOlt
+                            )
+                          }
+                          className="flex-1 py-1.5 text-[11px] font-bold text-slate-700 hover:text-white bg-slate-100 hover:bg-slate-800 rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                        >
+                          <Workflow className="w-3.5 h-3.5" />
+                          <span>Buka di Drawing</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Pagination Footer for Drawing E2E */}
+              {drawingTotalPages > 1 && (
+                <div className="flex flex-wrap items-center justify-between gap-2 p-4 bg-white border border-slate-200/80 rounded-xl text-xs text-slate-500 shadow-xs">
+                  <span>
+                    Halaman {currentPage} dari {drawingTotalPages}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      className="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 disabled:opacity-40 hover:bg-slate-100 text-slate-700"
+                    >
+                      Sebelumnya
+                    </button>
+                    {Array.from({ length: drawingTotalPages }, (_, i) => i + 1).map(p => (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => setCurrentPage(p)}
+                        className={`w-7 h-7 rounded-lg text-xs font-mono font-semibold ${
+                          currentPage === p
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      disabled={currentPage === drawingTotalPages}
+                      onClick={() => setCurrentPage(p => Math.min(drawingTotalPages, p + 1))}
+                      className="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 disabled:opacity-40 hover:bg-slate-100 text-slate-700"
+                    >
+                      Selanjutnya
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* ================= MODE 1: DATA CORE & OLT ASSETS ================= */}
           {searchMode === 'core' && (
             <div className="space-y-4">
@@ -1265,17 +1901,27 @@ export const DataCoreSearch: React.FC = () => {
                         {node.address}
                       </p>
 
-                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-2">
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
                           {node.picAvatar && (
-                            <img src={node.picAvatar} alt="PIC" className="w-6 h-6 rounded-full object-cover border border-slate-200" />
+                            <img src={node.picAvatar} alt="PIC" className="w-6 h-6 rounded-full object-cover border border-slate-200 shrink-0" />
                           )}
-                          <span className="font-medium text-slate-700 text-[11px]">{node.picName?.split('(')[0] || 'Tim Asset'}</span>
+                          <span className="font-medium text-slate-700 text-[11px] truncate">{node.picName?.split('(')[0] || 'Tim Asset'}</span>
                         </div>
 
-                        <span className="font-mono font-bold text-blue-600">
-                          {node.usedCores} / {node.capacityCores} C ({utilPercent}%)
-                        </span>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="font-mono font-bold text-blue-600">
+                            {node.usedCores} / {node.capacityCores} C ({utilPercent}%)
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => navigateToMapNode(node.id)}
+                            className="px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-200 text-[10px] font-bold transition-colors cursor-pointer flex items-center gap-1"
+                          >
+                            <MapPin className="w-3 h-3" />
+                            <span>Peta</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );

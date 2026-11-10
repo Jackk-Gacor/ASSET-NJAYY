@@ -23,7 +23,15 @@ import {
 } from 'lucide-react';
 
 export const ReportsView: React.FC = () => {
-  const { dataCoreList, fieldReportList, showToast, openCoreDetail } = useApp();
+  const {
+    dataCoreList,
+    fieldReportList,
+    feederList,
+    uplinkList,
+    setCurrentView,
+    showToast,
+    openCoreDetail,
+  } = useApp();
 
   const [filterRegion, setFilterRegion] = useState<string>('ALL');
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
@@ -265,7 +273,7 @@ export const ReportsView: React.FC = () => {
             </span>
           </div>
           <p className="text-xs text-slate-600 leading-relaxed">
-            Ditemukan <strong>{incompleteCores.length} Data Core</strong> yang belum melengkapi 4 berkas wajib (KMZ, Visio, GDB, Sheet). Terutama pada koridor wilayah <strong>Turen &amp; Dampit</strong> (proyek ekspansi rute) serta <strong>Kepanjen</strong> (menunggu hasil verifikasi revisi Visio SLD dari Tim Engineering).
+            Ditemukan <strong>{incompleteCores.length} Data Core</strong> yang belum melengkapi 4 berkas wajib (KMZ, Visio, GDB, Sheet). Terutama pada koridor wilayah <strong>Turen &amp; Dampit</strong> (proyek ekspansi rute) serta <strong>Kepanjen</strong> (menunggu hasil verifikasi revisi Visio SLD dari Tim Drawing Data).
           </p>
         </div>
       </div>
@@ -305,6 +313,78 @@ export const ReportsView: React.FC = () => {
           <p className="text-[11px] text-slate-400 mt-1">Tersinkronisasi dari tim lapangan</p>
         </div>
 
+      </div>
+
+      {/* Ringkasan Report Drawing Data: E2E Feeder & E2E Uplink */}
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+          <div>
+            <h3 className="text-sm font-extrabold text-slate-900">
+              Ringkasan Report Drawing Data (E2E Feeder &amp; E2E Uplink)
+            </h3>
+            <p className="text-xs text-slate-500">
+              Rekapitulasi status pengerjaan (DONE / PROGRESS) tersinkronisasi langsung dengan modul Drawing Data
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setCurrentView('engineering-feeder')}
+              className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer"
+            >
+              Buka E2E Feeder
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentView('engineering-uplink')}
+              className="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer"
+            >
+              Buka E2E Uplink
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-4">
+            <div>
+              <span className="text-[11px] font-mono font-bold text-slate-500 uppercase">
+                E2E ASSET FEEDER
+              </span>
+              <p className="text-lg font-extrabold text-slate-900 mt-0.5">
+                {feederList.filter(f => f.statusReport === 'DONE').length} DONE{' '}
+                <span className="text-slate-400 font-normal text-sm">
+                  / {feederList.filter(f => f.statusReport === 'PROGRESS').length} PROGRESS
+                </span>
+              </p>
+            </div>
+            <span className="px-3 py-1 rounded-full bg-emerald-700 text-white text-xs font-bold font-mono">
+              {feederList.length > 0
+                ? Math.round((feederList.filter(f => f.statusReport === 'DONE').length / feederList.length) * 100)
+                : 0}
+              % DONE
+            </span>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-4">
+            <div>
+              <span className="text-[11px] font-mono font-bold text-slate-500 uppercase">
+                E2E UPLINK
+              </span>
+              <p className="text-lg font-extrabold text-slate-900 mt-0.5">
+                {uplinkList.filter(u => u.statusReport === 'DONE').length} DONE{' '}
+                <span className="text-slate-400 font-normal text-sm">
+                  / {uplinkList.filter(u => u.statusReport === 'PROGRESS').length} PROGRESS
+                </span>
+              </p>
+            </div>
+            <span className="px-3 py-1 rounded-full bg-emerald-700 text-white text-xs font-bold font-mono">
+              {uplinkList.length > 0
+                ? Math.round((uplinkList.filter(u => u.statusReport === 'DONE').length / uplinkList.length) * 100)
+                : 0}
+              % DONE
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* ================= FILTER CONTROLS FOR REPORT DATA ================= */}

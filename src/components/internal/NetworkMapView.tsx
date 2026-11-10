@@ -447,7 +447,14 @@ export const NetworkMapView: React.FC<NetworkMapViewProps> = ({ defaultTab = 'ma
       setActiveMainTab(defaultTab);
     }
   }, [defaultTab]);
-  const { dataCoreList, openCoreDetail, showToast, navigateToSearchWithFilter } = useApp();
+  const {
+    dataCoreList,
+    openCoreDetail,
+    showToast,
+    navigateToSearchWithFilter,
+    selectedMapNodeId,
+    clearSelectedMapNode,
+  } = useApp();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapSvgRef = useRef<SVGSVGElement>(null);
 
@@ -468,6 +475,19 @@ export const NetworkMapView: React.FC<NetworkMapViewProps> = ({ defaultTab = 'ma
   // Selections
   const [selectedNode, setSelectedNode] = useState<NetworkNode | null>(null);
   const [selectedLink, setSelectedLink] = useState<NetworkLink | null>(null);
+
+  useEffect(() => {
+    if (selectedMapNodeId) {
+      const targetNode = INITIAL_NETWORK_NODES.find(n => n.id === selectedMapNodeId);
+      if (targetNode) {
+        setActiveMainTab('map');
+        setSelectedLink(null);
+        setSelectedNode(targetNode);
+        showToast(`Fokus Topologi & Ring Map: ${targetNode.code}`, 'info');
+      }
+      clearSelectedMapNode();
+    }
+  }, [selectedMapNodeId, clearSelectedMapNode, showToast]);
 
   // Dynamic Minimalist Tooltip for Network Nodes
   const [hoveredNodeTooltip, setHoveredNodeTooltip] = useState<{

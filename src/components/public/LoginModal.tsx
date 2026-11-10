@@ -12,38 +12,46 @@ export const LoginModal: React.FC = () => {
 
   if (!isLoginModalOpen) return null;
 
-  const rolesConfig: { role: UserRole; desc: string; color: string }[] = [
+  const rolesConfig: { role: UserRole; label: string; desc: string; color: string }[] = [
     {
       role: 'Admin',
+      label: 'Admin',
       desc: 'Akses penuh ke semua modul, konfigurasi data, approval & user switch',
       color: 'border-purple-300 bg-purple-50 text-purple-700',
     },
     {
       role: 'Tim Data',
+      label: 'Tim Data',
       desc: 'Input & upload data core, manajemen kapasitas port, inventarisasi',
       color: 'border-blue-300 bg-blue-50 text-blue-700',
     },
     {
       role: 'Engineering',
+      label: 'Drawing Data',
       desc: 'Feeder, Uplink, SID mapping, upload berkas CAD, GIS KMZ & Visio',
       color: 'border-sky-300 bg-sky-50 text-sky-700',
     },
     {
       role: 'Field',
+      label: 'Field',
       desc: 'Input laporan lapangan, verifikasi redaman OTDR & kondisi fisik tiang',
       color: 'border-amber-300 bg-amber-50 text-amber-700',
     },
     {
       role: 'Supervisor',
+      label: 'Supervisor',
       desc: 'Approval WIG, evaluasi KPI tim, verifikasi SLA & laporan audit',
       color: 'border-emerald-300 bg-emerald-50 text-emerald-700',
     },
     {
       role: 'Viewer',
+      label: 'Viewer',
       desc: 'Mode pantau cepat untuk audit wilayah & pencarian data core read-only',
       color: 'border-slate-300 bg-slate-50 text-slate-700',
     },
   ];
+
+  const selectedRoleLabel = rolesConfig.find(r => r.role === selectedRole)?.label || selectedRole;
 
   const handleRoleSelect = (role: UserRole) => {
     setSelectedRole(role);
@@ -109,7 +117,7 @@ export const LoginModal: React.FC = () => {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold">{r.role}</span>
+                      <span className="font-semibold">{r.label}</span>
                       {isSelected && <span className="w-2 h-2 rounded-full bg-blue-600" />}
                     </div>
                     <p className="text-[10px] text-slate-600 mt-1 line-clamp-2 font-normal">
@@ -164,7 +172,7 @@ export const LoginModal: React.FC = () => {
                 type="submit"
                 className="px-5 py-2.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
               >
-                <span>Masuk Sebagai {selectedRole}</span>
+                <span>Masuk Sebagai {selectedRoleLabel}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -183,7 +191,7 @@ export const LoginModal: React.FC = () => {
                   onClick={() => handleQuickLogin(r.role)}
                   className="px-2.5 py-1 text-xs rounded bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium transition-colors"
                 >
-                  Masuk sbg {r.role}
+                  Masuk sbg {r.label}
                 </button>
               ))}
             </div>

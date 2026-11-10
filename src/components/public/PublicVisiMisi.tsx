@@ -16,7 +16,7 @@ export const PublicVisiMisi: React.FC = () => {
     {
       code: 'H',
       title: 'Harmonis',
-      desc: 'Saling peduli dan menghargai sinergi antartim Data, Engineering, dan Field lintas wilayah kerja Malang.',
+      desc: 'Saling peduli dan menghargai sinergi antartim Data, Drawing Data, dan Field lintas wilayah kerja Malang.',
     },
     {
       code: 'L',
@@ -119,7 +119,7 @@ export const PublicVisiMisi: React.FC = () => {
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70 space-y-2">
-                  <span className="text-xs font-mono font-bold text-sky-600">02. GIS ENGINEERING</span>
+                  <span className="text-xs font-mono font-bold text-sky-600">02. GIS DRAWING DATA</span>
                   <h4 className="text-sm font-bold text-slate-900">Digital Mapping Geospasial</h4>
                   <p className="text-xs text-slate-600 leading-relaxed">
                     Menyediakan visualisasi KMZ/KML, ArcGDB, dan Single Line Diagram (SLD) yang mutakhir untuk memudahkan perancangan rute baru.

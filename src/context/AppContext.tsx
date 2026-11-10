@@ -9,6 +9,7 @@ import {
   FieldReportItem,
   ActivityLog,
   MapFilterTarget,
+  E2EStatusReport,
 } from '../types';
 import {
   INITIAL_USERS,
@@ -36,6 +37,8 @@ interface AppContextType {
   toast: Toast | null;
   searchFilterQuery: string;
   mapFilterTarget: MapFilterTarget | null;
+  selectedMapNodeId: string | null;
+  drawingSearchPrefill: string;
   
   // Data State
   dataCoreList: DataCoreItem[];
@@ -57,6 +60,10 @@ interface AppContextType {
   setMapFilterTarget: (target: MapFilterTarget | null) => void;
   navigateToSearchWithFilter: (target: MapFilterTarget) => void;
   clearMapFilter: () => void;
+  navigateToMapNode: (nodeId: string) => void;
+  clearSelectedMapNode: () => void;
+  navigateToDrawingItem: (tab: 'feeder' | 'uplink', query: string) => void;
+  clearDrawingSearchPrefill: () => void;
   showToast: (text: string, type?: 'success' | 'info' | 'warning') => void;
 
   // Mutators
@@ -64,8 +71,12 @@ interface AppContextType {
   updateDataCore: (id: string, updates: Partial<DataCoreItem>) => void;
   deleteDataCore: (id: string) => void;
   approveDataCore: (id: string) => void;
-  addFeeder: (item: Omit<FeederItem, 'id' | 'lastAudit'>) => void;
+  addFeeder: (item: Omit<FeederItem, 'id'>) => void;
+  updateFeeder: (id: string, updates: Partial<FeederItem>) => void;
+  updateFeederStatus: (id: string, statusReport: E2EStatusReport) => void;
   addUplink: (item: Omit<UplinkItem, 'id'>) => void;
+  updateUplink: (id: string, updates: Partial<UplinkItem>) => void;
+  updateUplinkStatus: (id: string, statusReport: E2EStatusReport) => void;
   addSid: (item: Omit<SidItem, 'id'>) => void;
   addFieldReport: (item: Omit<FieldReportItem, 'id'>) => void;
   resetAllDataToDefault: () => void;
@@ -77,8 +88,8 @@ const STORAGE_KEYS = {
   LOGGED_IN: 'pln_icon_asset_logged_in',
   CURRENT_USER_ROLE: 'pln_icon_asset_user_role',
   DATA_CORE: 'pln_icon_asset_data_core_v1',
-  FEEDER: 'pln_icon_asset_feeder_v1',
-  UPLINK: 'pln_icon_asset_uplink_v1',
+  FEEDER: 'pln_icon_asset_feeder_v2',
+  UPLINK: 'pln_icon_asset_uplink_v2',
   SID: 'pln_icon_asset_sid_v1',
   FIELD_REPORT: 'pln_icon_asset_field_v1',
   LOGS: 'pln_icon_asset_logs_v1',
@@ -105,6 +116,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedCore, setSelectedCore] = useState<DataCoreItem | null>(null);
   const [searchFilterQuery, setSearchFilterQuery] = useState('');
   const [mapFilterTarget, setMapFilterTarget] = useState<MapFilterTarget | null>(null);
+  const [selectedMapNodeId, setSelectedMapNodeId] = useState<string | null>(null);
+  const [drawingSearchPrefill, setDrawingSearchPrefill] = useState('');
   const [toast, setToast] = useState<Toast | null>(null);
 
   // Data loaded from localStorage or initial dummy
@@ -220,6 +233,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('Filter simpul/segmen dari peta telah dibersihkan', 'info');
   };
 
+  const navigateToMapNode = (nodeId: string) => {
+    setSelectedMapNodeId(nodeId);
+    setCurrentView('network-map');
+  };
+
+  const clearSelectedMapNode = () => {
+    setSelectedMapNodeId(null);
+  };
+
+  const navigateToDrawingItem = (tab: 'feeder' | 'uplink', query: string) => {
+    setDrawingSearchPrefill(query);
+    setCurrentView(tab === 'uplink' ? 'engineering-uplink' : 'engineering-feeder');
+  };
+
+  const clearDrawingSearchPrefill = () => {
+    setDrawingSearchPrefill('');
+  };
+
   const addDataCore = (item: Omit<DataCoreItem, 'id' | 'lastUpdate'>) => {
     const newId = `CORE-MLG-${String(dataCoreList.length + 1).padStart(3, '0')}`;
     const today = new Date().toISOString().split('T')[0];
@@ -270,15 +301,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast(`Status data ${id} berhasil di-Approved/WIG verified`, 'success');
   };
 
-  const addFeeder = (item: Omit<FeederItem, 'id' | 'lastAudit'>) => {
-    const today = new Date().toISOString().split('T')[0];
+  const addFeeder = (item: Omit<FeederItem, 'id'>) => {
     const newFeeder: FeederItem = {
       ...item,
       id: `FDR-${String(feederList.length + 1).padStart(2, '0')}`,
-      lastAudit: today,
     };
     setFeederList(prev => [newFeeder, ...prev]);
-    showToast(`Feeder ${newFeeder.feederCode} berhasil ditambahkan`, 'success');
+    showToast(`E2E Feeder ${newFeeder.hostnameOlt} berhasil ditambahkan`, 'success');
+  };
+
+  const updateFeeder = (id: string, updates: Partial<FeederItem>) => {
+    setFeederList(prev =>
+      prev.map(item => (item.id === id ? { ...item, ...updates } : item))
+    );
+    showToast('Data E2E Feeder berhasil diperbarui', 'success');
+  };
+
+  const updateFeederStatus = (id: string, statusReport: E2EStatusReport) => {
+    const todayFormatted = new Date().toLocaleDateString('en-GB');
+    setFeederList(prev =>
+      prev.map(item =>
+        item.id === id
+          ? {
+              ...item,
+              statusReport,
+              reportDone: statusReport === 'DONE' ? (item.reportDone || todayFormatted) : '',
+            }
+          : item
+      )
+    );
+    showToast(`Status E2E Feeder diperbarui menjadi ${statusReport}`, 'success');
   };
 
   const addUplink = (item: Omit<UplinkItem, 'id'>) => {
@@ -287,7 +339,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: `UPL-${String(uplinkList.length + 1).padStart(2, '0')}`,
     };
     setUplinkList(prev => [newUplink, ...prev]);
-    showToast(`Uplink ${newUplink.uplinkCode} berhasil didaftarkan`, 'success');
+    showToast(`E2E Uplink ${newUplink.hostnameOlt} berhasil didaftarkan`, 'success');
+  };
+
+  const updateUplink = (id: string, updates: Partial<UplinkItem>) => {
+    setUplinkList(prev =>
+      prev.map(item => (item.id === id ? { ...item, ...updates } : item))
+    );
+    showToast('Data E2E Uplink berhasil diperbarui', 'success');
+  };
+
+  const updateUplinkStatus = (id: string, statusReport: E2EStatusReport) => {
+    const todayFormatted = new Date().toLocaleDateString('en-GB');
+    setUplinkList(prev =>
+      prev.map(item =>
+        item.id === id
+          ? {
+              ...item,
+              statusReport,
+              reportDone: statusReport === 'DONE' ? (item.reportDone || todayFormatted) : '',
+            }
+          : item
+      )
+    );
+    showToast(`Status E2E Uplink diperbarui menjadi ${statusReport}`, 'success');
   };
 
   const addSid = (item: Omit<SidItem, 'id'>) => {
@@ -347,6 +422,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toast,
         searchFilterQuery,
         mapFilterTarget,
+        selectedMapNodeId,
+        drawingSearchPrefill,
         dataCoreList,
         feederList,
         uplinkList,
@@ -364,13 +441,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setMapFilterTarget,
         navigateToSearchWithFilter,
         clearMapFilter,
+        navigateToMapNode,
+        clearSelectedMapNode,
+        navigateToDrawingItem,
+        clearDrawingSearchPrefill,
         showToast,
         addDataCore,
         updateDataCore,
         deleteDataCore,
         approveDataCore,
         addFeeder,
+        updateFeeder,
+        updateFeederStatus,
         addUplink,
+        updateUplink,
+        updateUplinkStatus,
         addSid,
         addFieldReport,
         resetAllDataToDefault,

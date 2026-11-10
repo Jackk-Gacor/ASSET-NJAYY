@@ -12,9 +12,7 @@ import { LoginModal } from './components/public/LoginModal';
 import { InternalLayout } from './components/internal/InternalLayout';
 import { DashboardView } from './components/internal/DashboardView';
 import { DataCoreSearch } from './components/internal/DataCoreSearch';
-import { DataManagementView } from './components/internal/DataManagementView';
 import { EngineeringView } from './components/internal/EngineeringView';
-import { FieldReportingView } from './components/internal/FieldReportingView';
 import { NetworkMapView } from './components/internal/NetworkMapView';
 import { LogicalTopologyView } from './components/internal/LogicalTopologyView';
 import { DataRingView } from './components/internal/DataRingView';
@@ -37,11 +35,9 @@ const AppContent: React.FC = () => {
     [
       'dashboard',
       'search',
-      'data-core',
       'engineering-feeder',
       'engineering-uplink',
       'engineering-sid',
-      'field',
       'network-map',
       'topology',
       'data-ring',
@@ -70,11 +66,9 @@ const AppContent: React.FC = () => {
         <InternalLayout>
           {currentView === 'dashboard' && <DashboardView />}
           {currentView === 'search' && <DataCoreSearch />}
-          {currentView === 'data-core' && <DataManagementView />}
           {(currentView === 'engineering-feeder' ||
             currentView === 'engineering-uplink' ||
             currentView === 'engineering-sid') && <EngineeringView />}
-          {currentView === 'field' && <FieldReportingView />}
           {(currentView === 'network-map' || currentView === 'data-ring') && (
             <NetworkMapView defaultTab={currentView === 'data-ring' ? 'ring' : 'map'} />
           )}
