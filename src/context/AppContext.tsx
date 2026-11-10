@@ -8,6 +8,7 @@ import {
   SidItem,
   FieldReportItem,
   ActivityLog,
+  MapFilterTarget,
 } from '../types';
 import {
   INITIAL_USERS,
@@ -34,6 +35,7 @@ interface AppContextType {
   selectedCore: DataCoreItem | null;
   toast: Toast | null;
   searchFilterQuery: string;
+  mapFilterTarget: MapFilterTarget | null;
   
   // Data State
   dataCoreList: DataCoreItem[];
@@ -52,6 +54,9 @@ interface AppContextType {
   openCoreDetail: (core: DataCoreItem) => void;
   closeCoreDetail: () => void;
   setSearchFilterQuery: (query: string) => void;
+  setMapFilterTarget: (target: MapFilterTarget | null) => void;
+  navigateToSearchWithFilter: (target: MapFilterTarget) => void;
+  clearMapFilter: () => void;
   showToast: (text: string, type?: 'success' | 'info' | 'warning') => void;
 
   // Mutators
@@ -99,6 +104,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedCore, setSelectedCore] = useState<DataCoreItem | null>(null);
   const [searchFilterQuery, setSearchFilterQuery] = useState('');
+  const [mapFilterTarget, setMapFilterTarget] = useState<MapFilterTarget | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
 
   // Data loaded from localStorage or initial dummy
@@ -198,6 +204,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const closeCoreDetail = () => {
     setIsDetailModalOpen(false);
     setSelectedCore(null);
+  };
+
+  const navigateToSearchWithFilter = (target: MapFilterTarget) => {
+    setMapFilterTarget(target);
+    setCurrentView('search');
+    showToast(
+      `Pencarian difilter berdasarkan ${target.type === 'node' ? 'Simpul' : 'Segmen'}: ${target.code}`,
+      'info'
+    );
+  };
+
+  const clearMapFilter = () => {
+    setMapFilterTarget(null);
+    showToast('Filter simpul/segmen dari peta telah dibersihkan', 'info');
   };
 
   const addDataCore = (item: Omit<DataCoreItem, 'id' | 'lastUpdate'>) => {
@@ -326,6 +346,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         selectedCore,
         toast,
         searchFilterQuery,
+        mapFilterTarget,
         dataCoreList,
         feederList,
         uplinkList,
@@ -340,6 +361,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         openCoreDetail,
         closeCoreDetail,
         setSearchFilterQuery,
+        setMapFilterTarget,
+        navigateToSearchWithFilter,
+        clearMapFilter,
         showToast,
         addDataCore,
         updateDataCore,

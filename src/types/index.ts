@@ -134,6 +134,27 @@ export interface NetworkNode {
   usedCores: number;
   status: 'Optimal' | 'Warning' | 'Standby';
   connections: string[]; // Connected Node IDs
+  crmAssetCode?: string;
+  address?: string;
+  connectedCustomersCount?: number;
+  picName?: string;
+  picPhone?: string;
+  picAvatar?: string;
+  uptimeSla?: string;
+}
+
+export interface NetworkLink {
+  id: string;
+  fromNodeId: string;
+  toNodeId: string;
+  name: string;
+  code: string;
+  type: 'BACKBONE' | 'FEEDER' | 'UPLINK' | 'RING';
+  coreCapacity: number;
+  coreUsed: number;
+  lengthKm: number;
+  attenuationDbm: number;
+  status: 'Optimal' | 'Warning' | 'Maintenance' | 'Normal' | 'Degraded' | 'Down';
 }
 
 export interface RingNetworkItem {
@@ -154,4 +175,12 @@ export interface ActivityLog {
   action: string;
   entity: string;
   type: 'create' | 'update' | 'approval' | 'field';
+}
+
+export interface MapFilterTarget {
+  type: 'node' | 'segment';
+  id: string;
+  code: string;
+  name: string;
+  nodeIds?: string[]; // for segments: [fromNodeId, toNodeId]
 }

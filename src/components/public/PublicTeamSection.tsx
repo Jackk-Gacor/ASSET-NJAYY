@@ -44,6 +44,8 @@ export interface TeamMember {
   tools: string[];
   coverageAreas: string[];
   contributions: MilestoneContribution[];
+  photoUrl?: string;
+  photoPosition?: string;
 }
 
 export const TEAM_MEMBERS: TeamMember[] = [
@@ -67,6 +69,8 @@ export const TEAM_MEMBERS: TeamMember[] = [
     ],
     tools: ['MS Visio 2021', 'Google Earth Pro', 'AutoCAD Electrical', 'ArcGIS Pro'],
     coverageAreas: ['Malang Kota (Klojen, Blimbing)', 'Kota Batu', 'Ring Inner Malang', 'Ring Metro Utara'],
+    photoUrl: '/assets/aistudio/image_53ba5752.png',
+    photoPosition: 'object-[center_20%]',
     contributions: [
       {
         title: 'Standardisasi Master SLD OLT Klojen & Batu Pusat',
@@ -105,6 +109,8 @@ export const TEAM_MEMBERS: TeamMember[] = [
     ],
     tools: ['ArcGIS / QGIS Spatial', 'Google Earth KMZ', 'MS Visio', 'OptiSystem Simulator'],
     coverageAreas: ['Kepanjen (Malang Selatan)', 'Turen & Dampit', 'Ring Poros Selatan', 'Sentral OLT Blimbing'],
+    photoUrl: '/assets/aistudio/image_c3e39bbf.png',
+    photoPosition: 'object-[center_18%]',
     contributions: [
       {
         title: 'Pemetaan Geodatabase (GDB) Feeder & FDT Malang Raya',
@@ -346,6 +352,82 @@ export const TEAM_MEMBERS: TeamMember[] = [
       },
     ],
   },
+  {
+    id: 'ijul',
+    name: 'Ijul',
+    role: 'Intern',
+    roleTitle: 'Fiber Route Patrol & Pole Asset Inspection (Intern)',
+    bgColor: 'bg-[#e0e7ff]',
+    badgeColor: 'text-rose-500',
+    focus: 'Fiber Route Patrol, Pole Asset & ROW Clearance',
+    quote: 'Keamanan fisik kabel di lapangan berawal dari ketelitian menginspeksi setiap tiang dan span tumpu.',
+    bio: 'Fokus pada patroli rutin jalur kabel udara (ADSS) dan kabel tanah, verifikasi tiang PLN, serta pendataan kondisi right-of-way (ROW) di area kerja Malang Raya.',
+    expertise: [
+      'Route Patrol & Span Inspection',
+      'PLN Pole Tagging & Geotagging',
+      'Splice Enclosure Physical Audit',
+      'Right of Way (ROW) Clearance',
+      'Aerial Cable Sag & Tension Audit',
+      'Field Incident Quick Reporting',
+    ],
+    tools: ['GPS Handheld Garmin', 'Asset Mobile Field Reporter', 'Laser Rangefinder', 'Google Earth Pro'],
+    coverageAreas: ['Malang Kota & Sekitarnya', 'Kepanjen (Malang Selatan)', 'Koridor Singosari - Lawang', 'Sentral ODC Distribusi'],
+    contributions: [
+      {
+        title: 'Patroli Jalur Transmisi & Audit Tiang Distribusi',
+        desc: 'Melakukan survei lapangan kondisi tiang PLN dan clearance kabel optik pada 25+ km jalur distribusi.',
+        badge: 'Route Patrol',
+      },
+      {
+        title: 'Verifikasi Geotagging Joint Closure Lapangan',
+        desc: 'Pencatatan titik closure dan pembaruan database koordinat lapangan untuk kesesuaian gambar GIS.',
+        badge: 'Geotagging Asset',
+      },
+      {
+        title: 'Pemeriksaan Preventif Span Kabel Penyeberangan',
+        desc: 'Identifikasi potensi lendutan kabel pada perlintasan jalan utama untuk mitigasi risiko kabel tersangkut kendaraan.',
+        badge: 'Safety Inspection',
+      },
+    ],
+  },
+  {
+    id: 'ferdi',
+    name: 'Ferdi',
+    role: 'Intern',
+    roleTitle: 'Hardware Inventory & ODF Rack Registry (Intern)',
+    bgColor: 'bg-[#fae8ff]',
+    badgeColor: 'text-rose-500',
+    focus: 'Passive Optical Inventory, ODF Rack & Barcode Tracking',
+    quote: 'Integritas inventaris perangkat keras adalah fondasi ekosistem jaringan yang tertata, rapi, dan terukur.',
+    bio: 'Bertanggung jawab atas rekonsiliasi perangkat pasif, pencatatan serial number ODF & FDT, serta pemeliharaan database inventaris Divisi Asset Malang.',
+    expertise: [
+      'ODF Rack & Subrack Cataloging',
+      'Passive Optical Component Inventory',
+      'Barcode & QR Serial Tracking',
+      'Terminal Box & Patch Panel Audit',
+      'Material Spare Parts Reconciliation',
+      'Asset Lifecycle & Disposal Audit',
+    ],
+    tools: ['Asset Inventory Management System', 'Barcode & QR Scanner', 'Excel Matrix Database', 'Visio Rack Layout Viewer'],
+    coverageAreas: ['Shelter GI Kebon Agung & GI Lawang', 'Kantor UP3 Malang', 'POP ULP se-Malang Raya', 'Gudang Distribusi Asset'],
+    contributions: [
+      {
+        title: 'Digitalisasi Katalog Komponen ODF & FDT',
+        desc: 'Penyusunan kodefikasi dan inventarisasi rak terminasi serat optik pada shelter dan POP utama.',
+        badge: 'Inventory Catalog',
+      },
+      {
+        title: 'Audit Serial Number & Barcoding Perangkat',
+        desc: 'Penempelan barcode QR dan rekonsiliasi data fisik perangkat terminasi dengan basis data internal.',
+        badge: 'Barcode Audit',
+      },
+      {
+        title: 'Rekonsiliasi Material Cadangan & Spare Parts FO',
+        desc: 'Pencatatan ketersediaan pigtail, adapter patch cord, dan splice protector untuk kesiapan operasional.',
+        badge: 'Spare Registry',
+      },
+    ],
+  },
 ];
 
 export const PublicTeamSection: React.FC = () => {
@@ -363,6 +445,10 @@ export const PublicTeamSection: React.FC = () => {
       return {};
     }
   });
+
+  const getMemberPhoto = (member: TeamMember): string | undefined => {
+    return memberPhotos[member.id] || member.photoUrl;
+  };
 
   const handlePhotoUpload = (memberId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -392,7 +478,7 @@ export const PublicTeamSection: React.FC = () => {
     setMemberPhotos(updated);
     try {
       localStorage.setItem('pln_team_photos', JSON.stringify(updated));
-      showToast('Foto profil dikembalikan ke placeholder default', 'info');
+      showToast('Foto profil dikembalikan ke default', 'info');
     } catch (err) {
       console.error('Failed to update photo storage', err);
     }
@@ -487,9 +573,10 @@ export const PublicTeamSection: React.FC = () => {
           </div>
         </div>
 
-        {/* 8 Team Member Cards Grid */}
+        {/* Team Member Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7 items-start">
           {TEAM_MEMBERS.map((member) => {
+            const memberPhoto = getMemberPhoto(member);
             const hasCustomPhoto = !!memberPhotos[member.id];
             const isCardExpanded = viewDisplayMode === 'expanded' || !!expandedCardIds[member.id];
 
@@ -505,11 +592,11 @@ export const PublicTeamSection: React.FC = () => {
                 <div
                   className={`relative w-full aspect-[4/5] ${member.bgColor} flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-[1.01]`}
                 >
-                  {hasCustomPhoto ? (
+                  {memberPhoto ? (
                     <img
-                      src={memberPhotos[member.id]}
+                      src={memberPhoto}
                       alt={member.name}
-                      className="w-full h-full object-cover object-top"
+                      className={`w-full h-full object-cover ${member.photoPosition || 'object-top'}`}
                     />
                   ) : (
                     /* Subtle artistic initials & soft typography for modern corporate look */
@@ -711,11 +798,11 @@ export const PublicTeamSection: React.FC = () => {
               <div className="flex items-center gap-4 sm:gap-5">
                 <div className="relative group shrink-0">
                   <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white shadow-md flex items-center justify-center overflow-hidden border-2 border-white">
-                    {memberPhotos[selectedMember.id] ? (
+                    {getMemberPhoto(selectedMember) ? (
                       <img
-                        src={memberPhotos[selectedMember.id]}
+                        src={getMemberPhoto(selectedMember)}
                         alt={selectedMember.name}
-                        className="w-full h-full object-cover object-top"
+                        className={`w-full h-full object-cover ${selectedMember.photoPosition || 'object-top'}`}
                       />
                     ) : (
                       <span className="text-2xl sm:text-3xl font-black text-slate-800">

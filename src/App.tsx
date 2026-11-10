@@ -75,9 +75,10 @@ const AppContent: React.FC = () => {
             currentView === 'engineering-uplink' ||
             currentView === 'engineering-sid') && <EngineeringView />}
           {currentView === 'field' && <FieldReportingView />}
-          {currentView === 'network-map' && <NetworkMapView />}
+          {(currentView === 'network-map' || currentView === 'data-ring') && (
+            <NetworkMapView defaultTab={currentView === 'data-ring' ? 'ring' : 'map'} />
+          )}
           {currentView === 'topology' && <LogicalTopologyView />}
-          {currentView === 'data-ring' && <DataRingView />}
           {currentView === 'reports' && <ReportsView />}
         </InternalLayout>
       ) : (

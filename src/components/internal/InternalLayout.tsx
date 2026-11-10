@@ -63,9 +63,13 @@ export const InternalLayout: React.FC<InternalLayoutProps> = ({ children }) => {
       icon: Settings,
     },
     { id: 'field', label: 'Field Report', icon: MapPin },
-    { id: 'network-map', label: 'Network Map', icon: Map },
+    {
+      id: 'network-map',
+      aliasIds: ['network-map', 'data-ring'],
+      label: 'Network & Ring Map',
+      icon: Map,
+    },
     { id: 'topology', label: 'Logical Topology', icon: GitBranch },
-    { id: 'data-ring', label: 'Data Ring', icon: RefreshCw },
     { id: 'reports', label: 'Reports', icon: BarChart2 },
     { id: 'settings', label: 'Settings', icon: SlidersHorizontal, isAction: true },
   ];
@@ -102,11 +106,10 @@ export const InternalLayout: React.FC<InternalLayoutProps> = ({ children }) => {
       case 'field':
         return 'Field Report';
       case 'network-map':
-        return 'Network Map';
+      case 'data-ring':
+        return 'Network & Ring Map';
       case 'topology':
         return 'Logical Topology';
-      case 'data-ring':
-        return 'Data Ring';
       case 'reports':
         return 'Reports';
       default:

@@ -6,6 +6,10 @@ import { NodeDetailDrawer } from './NodeDetailDrawer';
 import { NetworkMiniMap } from './NetworkMiniMap';
 import { NetworkExportModal, NetworkExportOptions } from './NetworkExportModal';
 import { GoogleNetworkMapView } from './GoogleNetworkMapView';
+import { NetworkLegendPanel } from './NetworkLegendPanel';
+import { DataRingView } from './DataRingView';
+import { GisReferenceModal } from './GisReferenceModal';
+import { PopCrmCatalogView } from './PopCrmCatalogView';
 import {
   Network,
   Globe,
@@ -59,291 +63,398 @@ export interface NetworkLink {
 }
 
 const NETWORK_LINKS: NetworkLink[] = [
+  // ================= 1. SUPER BACKBONE TRUNK =================
   {
-    id: 'LINK-SBY-LWG',
-    fromNodeId: 'NODE-SBY-01',
-    toNodeId: 'NODE-LWG-01',
-    name: 'Super Backbone Surabaya - Lawang',
-    code: 'BONE-SBY-LWG-100G',
+    id: 'LINK-GI-LWG-KBG',
+    fromNodeId: 'NODE-GI-LWG',
+    toNodeId: 'NODE-GI-KBG',
+    name: 'Super Backbone: GI Lawang_AREA45 ⇄ GI Kebon Agung_AREA45 (Titik 0)',
+    code: 'BONE-LWG-KBG-288C',
     type: 'BACKBONE',
     coreCapacity: 288,
     coreUsed: 216,
-    lengthKm: 62.4,
-    attenuationDbm: -14.2,
+    lengthKm: 24.5,
+    attenuationDbm: -13.8,
     status: 'Optimal',
-    x1: 400,
-    y1: 40,
-    x2: 480,
-    y2: 110,
+    x1: 650,
+    y1: 75,
+    x2: 450,
+    y2: 440,
+    isCurved: true,
+    curvePath: 'M 650 75 Q 600 240 450 440',
   },
+
+  // ================= 2. GAMBAR 1: POROS SELATAN (KEPANJEN - GONDANGLEGI - SUMBERPUCUNG) =================
   {
-    id: 'LINK-SBY-SGS',
-    fromNodeId: 'NODE-SBY-01',
-    toNodeId: 'NODE-SGS-01',
-    name: 'Direct Trunk Surabaya - Singosari Gateway',
-    code: 'BONE-SBY-SGS-40G',
+    id: 'LINK-SBP-KPJ',
+    fromNodeId: 'NODE-ULP-SBP',
+    toNodeId: 'NODE-ULP-KPJ',
+    name: 'Jalur Transmisi ODC Sumberpucung ⇄ ODC Kepanjen_AREA45',
+    code: 'BONE-SBP-KPJ-72C',
     type: 'BACKBONE',
-    coreCapacity: 144,
-    coreUsed: 98,
-    lengthKm: 71.0,
-    attenuationDbm: -15.1,
+    coreCapacity: 72,
+    coreUsed: 48,
+    lengthKm: 14.6,
+    attenuationDbm: -16.5,
     status: 'Optimal',
-    x1: 400,
-    y1: 40,
-    x2: 420,
-    y2: 170,
+    x1: 180,
+    y1: 580,
+    x2: 360,
+    y2: 560,
   },
   {
-    id: 'LINK-LWG-SGS',
-    fromNodeId: 'NODE-LWG-01',
-    toNodeId: 'NODE-SGS-01',
-    name: 'Interkoneksi Lawang - Singosari',
-    code: 'BONE-LWG-SGS-10G',
+    id: 'LINK-KPJ-GDL',
+    fromNodeId: 'NODE-ULP-KPJ',
+    toNodeId: 'NODE-ULP-GDL',
+    name: 'Jalur Transmisi ODC Kepanjen ⇄ ODC Gondanglegi_AREA45',
+    code: 'BONE-KPJ-GDL-96C',
     type: 'BACKBONE',
     coreCapacity: 96,
     coreUsed: 64,
     lengthKm: 11.2,
-    attenuationDbm: -16.8,
+    attenuationDbm: -16.4,
     status: 'Optimal',
-    x1: 480,
-    y1: 110,
-    x2: 420,
-    y2: 170,
+    x1: 360,
+    y1: 560,
+    x2: 540,
+    y2: 580,
   },
   {
-    id: 'LINK-SGS-BLM',
-    fromNodeId: 'NODE-SGS-01',
-    toNodeId: 'NODE-MLG-BLM',
-    name: 'Feeder Singosari - Blimbing Industri',
-    code: 'FDR-SGS-BLM-01',
-    type: 'FEEDER',
-    coreCapacity: 96,
-    coreUsed: 72,
-    lengthKm: 6.8,
-    attenuationDbm: -18.2,
-    status: 'Optimal',
-    x1: 420,
-    y1: 170,
-    x2: 430,
-    y2: 250,
-  },
-  {
-    id: 'LINK-BLM-SHT',
-    fromNodeId: 'NODE-MLG-BLM',
-    toNodeId: 'NODE-MLG-SHT',
-    name: 'Feeder Blimbing - Soekarno Hatta Campus',
-    code: 'FDR-BLM-SHT-02',
-    type: 'FEEDER',
-    coreCapacity: 144,
-    coreUsed: 118,
-    lengthKm: 4.5,
-    attenuationDbm: -17.5,
-    status: 'Optimal',
-    x1: 430,
-    y1: 250,
-    x2: 340,
-    y2: 240,
-  },
-  {
-    id: 'LINK-BLM-KLJ',
-    fromNodeId: 'NODE-MLG-BLM',
-    toNodeId: 'NODE-MLG-KLJ',
-    name: 'Feeder Blimbing - Master Hub Klojen',
-    code: 'FDR-MLG-KLJ-01',
-    type: 'FEEDER',
-    coreCapacity: 144,
-    coreUsed: 108,
-    lengthKm: 5.2,
-    attenuationDbm: -18.0,
-    status: 'Optimal',
-    x1: 430,
-    y1: 250,
-    x2: 390,
-    y2: 320,
-  },
-  {
-    id: 'LINK-SHT-KLJ',
-    fromNodeId: 'NODE-MLG-SHT',
-    toNodeId: 'NODE-MLG-KLJ',
-    name: 'Uplink Metro Suhat - Klojen',
-    code: 'UPL-MLG-SHT-20G',
-    type: 'UPLINK',
-    coreCapacity: 96,
-    coreUsed: 84,
-    lengthKm: 4.8,
-    attenuationDbm: -17.8,
-    status: 'Optimal',
-    x1: 340,
-    y1: 240,
-    x2: 390,
-    y2: 320,
-  },
-  {
-    id: 'LINK-SGS-BTU',
-    fromNodeId: 'NODE-SGS-01',
-    toNodeId: 'NODE-BTU-01',
-    name: 'Uplink Singosari - Kota Batu (Karangploso Link)',
-    code: 'UPL-SGS-BTU-10G',
-    type: 'UPLINK',
-    coreCapacity: 72,
-    coreUsed: 52,
-    lengthKm: 18.4,
-    attenuationDbm: -19.4,
-    status: 'Optimal',
-    x1: 420,
-    y1: 170,
-    x2: 210,
-    y2: 190,
-  },
-  {
-    id: 'LINK-BTU-BMJ',
-    fromNodeId: 'NODE-BTU-01',
-    toNodeId: 'NODE-BTU-BMJ',
-    name: 'Feeder Batu Alun-Alun - Bumiaji Agrowisata',
-    code: 'FDR-BTU-BMJ-01',
+    id: 'LINK-GDL-DMP',
+    fromNodeId: 'NODE-ULP-GDL',
+    toNodeId: 'NODE-ULP-DMP',
+    name: 'Jalur Distribusi ODC Gondanglegi ⇄ ULP Dampit_AREA45',
+    code: 'FDR-GDL-DMP-48C',
     type: 'FEEDER',
     coreCapacity: 48,
     coreUsed: 24,
-    lengthKm: 6.2,
-    attenuationDbm: -18.9,
+    lengthKm: 16.5,
+    attenuationDbm: -17.8,
     status: 'Optimal',
-    x1: 210,
-    y1: 190,
+    x1: 540,
+    y1: 580,
+    x2: 720,
+    y2: 600,
+  },
+  {
+    id: 'LINK-KBG-KPJ',
+    fromNodeId: 'NODE-GI-KBG',
+    toNodeId: 'NODE-ULP-KPJ',
+    name: 'Backbone Titik 0 GI Kebon Agung ⇄ ODC Kepanjen_AREA45',
+    code: 'BONE-KBG-KPJ-96C',
+    type: 'BACKBONE',
+    coreCapacity: 96,
+    coreUsed: 64,
+    lengthKm: 18.4,
+    attenuationDbm: -17.2,
+    status: 'Optimal',
+    x1: 450,
+    y1: 440,
+    x2: 360,
+    y2: 560,
+  },
+  {
+    id: 'LINK-KBG-GDL',
+    fromNodeId: 'NODE-GI-KBG',
+    toNodeId: 'NODE-ULP-GDL',
+    name: 'Backbone Koridor Bululawang: GI Kebon Agung ⇄ ODC Gondanglegi_AREA45',
+    code: 'BONE-KBG-GDL-72C',
+    type: 'BACKBONE',
+    coreCapacity: 72,
+    coreUsed: 48,
+    lengthKm: 22.1,
+    attenuationDbm: -18.0,
+    status: 'Optimal',
+    x1: 450,
+    y1: 440,
+    x2: 540,
+    y2: 580,
+  },
+  {
+    id: 'LINK-KBG-SBP',
+    fromNodeId: 'NODE-GI-KBG',
+    toNodeId: 'NODE-ULP-SBP',
+    name: 'Ring Proteksi Barat: GI Kebon Agung ⇄ ODC Sumberpucung_AREA45',
+    code: 'RING-KBG-SBP-48C',
+    type: 'RING',
+    coreCapacity: 48,
+    coreUsed: 24,
+    lengthKm: 24.2,
+    attenuationDbm: -18.5,
+    status: 'Optimal',
+    x1: 450,
+    y1: 440,
     x2: 180,
+    y2: 580,
+  },
+  {
+    id: 'LINK-KBG-ULP-KBG',
+    fromNodeId: 'NODE-GI-KBG',
+    toNodeId: 'NODE-ULP-KBG',
+    name: 'Distribusi GI Kebon Agung ⇄ ODC ULP Kebong Agung_AREA45',
+    code: 'FDR-KBG-KBG-96C',
+    type: 'FEEDER',
+    coreCapacity: 96,
+    coreUsed: 72,
+    lengthKm: 2.4,
+    attenuationDbm: -15.1,
+    status: 'Optimal',
+    x1: 450,
+    y1: 440,
+    x2: 370,
+    y2: 440,
+  },
+
+  // ================= 3. GAMBAR 2: POROS TENGAH & UTARA (MALANG KOTA - BATU - SINGOSARI) =================
+  {
+    id: 'LINK-BTU-SKL',
+    fromNodeId: 'NODE-ULP-BATU',
+    toNodeId: 'NODE-ODC-SKL',
+    name: 'Backbone ODC ULP Batu ⇄ ODC GI Sengkaling_AREA45',
+    code: 'BONE-BTU-SKL-96C',
+    type: 'BACKBONE',
+    coreCapacity: 96,
+    coreUsed: 68,
+    lengthKm: 8.5,
+    attenuationDbm: -16.0,
+    status: 'Optimal',
+    x1: 140,
+    y1: 130,
+    x2: 230,
+    y2: 200,
+  },
+  {
+    id: 'LINK-SKL-MLY',
+    fromNodeId: 'NODE-ODC-SKL',
+    toNodeId: 'NODE-TK4-MLY',
+    name: 'Jalur Transmisi ODC GI Sengkaling ⇄ TK4 Desa Mulyoagung_AREA45',
+    code: 'FDR-SKL-MLY-48C',
+    type: 'FEEDER',
+    coreCapacity: 48,
+    coreUsed: 28,
+    lengthKm: 2.2,
+    attenuationDbm: -15.2,
+    status: 'Optimal',
+    x1: 230,
+    y1: 200,
+    x2: 300,
+    y2: 220,
+  },
+  {
+    id: 'LINK-MLY-BGW',
+    fromNodeId: 'NODE-TK4-MLY',
+    toNodeId: 'NODE-ODC-BGW',
+    name: 'Jalur Distribusi TK4 Mulyoagung ⇄ ODC Apart Begawan_AREA45',
+    code: 'FDR-MLY-BGW-48C',
+    type: 'FEEDER',
+    coreCapacity: 48,
+    coreUsed: 34,
+    lengthKm: 3.1,
+    attenuationDbm: -15.5,
+    status: 'Optimal',
+    x1: 300,
+    y1: 220,
+    x2: 360,
+    y2: 250,
+  },
+  {
+    id: 'LINK-BGW-DNY',
+    fromNodeId: 'NODE-ODC-BGW',
+    toNodeId: 'NODE-ULP-DNY',
+    name: 'Backbone Tlogomas: ODC Apart Begawan ⇄ ODC ULP Dinoyo_AREA45',
+    code: 'BONE-BGW-DNY-48C',
+    type: 'BACKBONE',
+    coreCapacity: 48,
+    coreUsed: 36,
+    lengthKm: 2.8,
+    attenuationDbm: -15.6,
+    status: 'Optimal',
+    x1: 360,
+    y1: 250,
+    x2: 420,
+    y2: 280,
+  },
+  {
+    id: 'LINK-DNY-UP3',
+    fromNodeId: 'NODE-ULP-DNY',
+    toNodeId: 'NODE-UP3-MLG',
+    name: 'Backbone Dinoyo ⇄ UP3 Malang_AREA45',
+    code: 'BONE-DNY-UP3-96C',
+    type: 'BACKBONE',
+    coreCapacity: 96,
+    coreUsed: 74,
+    lengthKm: 4.5,
+    attenuationDbm: -15.9,
+    status: 'Optimal',
+    x1: 420,
+    y1: 280,
+    x2: 480,
+    y2: 340,
+  },
+  {
+    id: 'LINK-UP3-BLM',
+    fromNodeId: 'NODE-UP3-MLG',
+    toNodeId: 'NODE-ULP-BLM',
+    name: 'Backbone Metro Kota: UP3 Malang ⇄ PLN ODC ULP Blimbing_AREA45',
+    code: 'BONE-UP3-BLM-144C',
+    type: 'BACKBONE',
+    coreCapacity: 144,
+    coreUsed: 92,
+    lengthKm: 4.8,
+    attenuationDbm: -15.7,
+    status: 'Optimal',
+    x1: 480,
+    y1: 340,
+    x2: 550,
+    y2: 250,
+  },
+  {
+    id: 'LINK-BLM-SGS',
+    fromNodeId: 'NODE-ULP-BLM',
+    toNodeId: 'NODE-ULP-SGS',
+    name: 'Backbone Industri: PLN ODC ULP Blimbing ⇄ ODC ULP Singosari_AREA45',
+    code: 'BONE-BLM-SGS-96C',
+    type: 'BACKBONE',
+    coreCapacity: 96,
+    coreUsed: 58,
+    lengthKm: 6.8,
+    attenuationDbm: -16.2,
+    status: 'Optimal',
+    x1: 550,
+    y1: 250,
+    x2: 580,
     y2: 140,
   },
   {
-    id: 'LINK-BTU-SHT',
-    fromNodeId: 'NODE-BTU-01',
-    toNodeId: 'NODE-MLG-SHT',
-    name: 'Uplink Transmisi Batu - Suhat Poros Barat',
-    code: 'UPL-BTU-MAIN-20G',
-    type: 'UPLINK',
-    coreCapacity: 96,
-    coreUsed: 80,
-    lengthKm: 15.6,
-    attenuationDbm: -18.3,
-    status: 'Optimal',
-    x1: 210,
-    y1: 190,
-    x2: 340,
-    y2: 240,
-  },
-  {
-    id: 'LINK-KLJ-SKN',
-    fromNodeId: 'NODE-MLG-KLJ',
-    toNodeId: 'NODE-MLG-SKN',
-    name: 'Feeder Klojen - Sukun Flyover',
-    code: 'FDR-MLG-SKN-01',
-    type: 'FEEDER',
-    coreCapacity: 96,
-    coreUsed: 56,
-    lengthKm: 4.1,
-    attenuationDbm: -21.3,
-    status: 'Warning',
-    x1: 390,
-    y1: 320,
-    x2: 330,
-    y2: 380,
-  },
-  {
-    id: 'LINK-SKN-KPJ',
-    fromNodeId: 'NODE-MLG-SKN',
-    toNodeId: 'NODE-KPJ-01',
-    name: 'Feeder Poros Selatan Sukun - Kepanjen',
-    code: 'FDR-SKN-KPJ-01',
-    type: 'FEEDER',
+    id: 'LINK-SGS-LWG',
+    fromNodeId: 'NODE-ULP-SGS',
+    toNodeId: 'NODE-GI-LWG',
+    name: 'Super Trunk: ODC ULP Singosari ⇄ GI Lawang_AREA45',
+    code: 'BONE-SGS-LWG-144C',
+    type: 'BACKBONE',
     coreCapacity: 144,
-    coreUsed: 112,
-    lengthKm: 16.8,
-    attenuationDbm: -17.9,
+    coreUsed: 98,
+    lengthKm: 8.2,
+    attenuationDbm: -15.3,
     status: 'Optimal',
-    x1: 330,
-    y1: 380,
-    x2: 360,
-    y2: 470,
+    x1: 580,
+    y1: 140,
+    x2: 650,
+    y2: 75,
   },
   {
-    id: 'LINK-KPJ-TRN',
-    fromNodeId: 'NODE-KPJ-01',
-    toNodeId: 'NODE-TRN-01',
-    name: 'Feeder Kepanjen - Turen Industri',
-    code: 'FDR-TRN-IND-01',
-    type: 'FEEDER',
-    coreCapacity: 72,
-    coreUsed: 46,
-    lengthKm: 14.5,
-    attenuationDbm: -18.7,
-    status: 'Optimal',
-    x1: 360,
-    y1: 470,
-    x2: 450,
-    y2: 500,
-  },
-  {
-    id: 'LINK-TRN-DMP',
-    fromNodeId: 'NODE-TRN-01',
-    toNodeId: 'NODE-DMP-01',
-    name: 'Distribusi Turen - Dampit Frontier',
-    code: 'FDR-DMP-TER-01',
+    id: 'LINK-BLM-SDR',
+    fromNodeId: 'NODE-ULP-BLM',
+    toNodeId: 'NODE-TK4-SDR',
+    name: 'Feeder Timur: PLN ODC Blimbing ⇄ TK4 Desa Sidorejo_AREA45',
+    code: 'FDR-BLM-SDR-48C',
     type: 'FEEDER',
     coreCapacity: 48,
-    coreUsed: 18,
-    lengthKm: 12.0,
-    attenuationDbm: -19.6,
+    coreUsed: 22,
+    lengthKm: 6.4,
+    attenuationDbm: -16.8,
     status: 'Optimal',
-    x1: 450,
-    y1: 500,
-    x2: 520,
-    y2: 540,
+    x1: 550,
+    y1: 250,
+    x2: 720,
+    y2: 150,
   },
   {
-    id: 'RING-POROS-SELATAN',
-    fromNodeId: 'NODE-MLG-KLJ',
-    toNodeId: 'NODE-KPJ-01',
-    name: 'Ring Loop Proteksi Jalur Malang - Kepanjen',
-    code: 'RING-POROS-SELATAN-BACKUP',
+    id: 'LINK-SDR-KBG',
+    fromNodeId: 'NODE-TK4-SDR',
+    toNodeId: 'NODE-GI-KBG',
+    name: 'Ring Redundansi Timur: TK4 Sidorejo ⇄ GI Kebon Agung_AREA45',
+    code: 'RING-SDR-KBG-48C',
     type: 'RING',
-    coreCapacity: 96,
-    coreUsed: 64,
-    lengthKm: 22.0,
-    attenuationDbm: -17.2,
+    coreCapacity: 48,
+    coreUsed: 24,
+    lengthKm: 14.5,
+    attenuationDbm: -17.4,
     status: 'Optimal',
-    x1: 390,
-    y1: 320,
-    x2: 360,
-    y2: 470,
+    x1: 720,
+    y1: 150,
+    x2: 450,
+    y2: 440,
     isCurved: true,
-    curvePath: 'M 390 320 Q 260 380 360 470',
+    curvePath: 'M 720 150 Q 640 310 450 440',
   },
   {
-    id: 'RING-MALANG-BATU',
-    fromNodeId: 'NODE-MLG-KLJ',
-    toNodeId: 'NODE-BTU-01',
-    name: 'Ring Loop Proteksi Jalur Malang - Batu (Dau Barat)',
-    code: 'RING-MALANG-BATU-BACKUP',
+    id: 'LINK-UP3-KBG',
+    fromNodeId: 'NODE-UP3-MLG',
+    toNodeId: 'NODE-GI-KBG',
+    name: 'Sub-Transmission Sentral: UP3 Malang ⇄ GI Kebon Agung (Titik 0)',
+    code: 'BONE-UP3-KBG-144C',
+    type: 'BACKBONE',
+    coreCapacity: 144,
+    coreUsed: 118,
+    lengthKm: 6.8,
+    attenuationDbm: -15.8,
+    status: 'Optimal',
+    x1: 480,
+    y1: 340,
+    x2: 450,
+    y2: 440,
+  },
+  {
+    id: 'LINK-SKL-KBG',
+    fromNodeId: 'NODE-ODC-SKL',
+    toNodeId: 'NODE-GI-KBG',
+    name: 'Ring Koridor Barat: ODC GI Sengkaling ⇄ GI Kebon Agung_AREA45',
+    code: 'RING-SKL-KBG-72C',
     type: 'RING',
     coreCapacity: 72,
-    coreUsed: 48,
-    lengthKm: 19.5,
-    attenuationDbm: -18.1,
+    coreUsed: 46,
+    lengthKm: 12.3,
+    attenuationDbm: -17.5,
     status: 'Optimal',
-    x1: 390,
-    y1: 320,
-    x2: 210,
-    y2: 190,
+    x1: 230,
+    y1: 200,
+    x2: 450,
+    y2: 440,
     isCurved: true,
-    curvePath: 'M 390 320 Q 270 290 210 190',
+    curvePath: 'M 230 200 Q 330 310 450 440',
+  },
+  {
+    id: 'LINK-SKL-SBP',
+    fromNodeId: 'NODE-ODC-SKL',
+    toNodeId: 'NODE-ULP-SBP',
+    name: 'Ring Proteksi Sengkaling - Sumberpucung_AREA45',
+    code: 'RING-SKL-SBP-48C',
+    type: 'RING',
+    coreCapacity: 48,
+    coreUsed: 28,
+    lengthKm: 21.0,
+    attenuationDbm: -18.2,
+    status: 'Optimal',
+    x1: 230,
+    y1: 200,
+    x2: 180,
+    y2: 580,
+    isCurved: true,
+    curvePath: 'M 230 200 Q 150 380 180 580',
   },
 ];
 
-export const NetworkMapView: React.FC = () => {
-  const { dataCoreList, openCoreDetail, showToast } = useApp();
+export interface NetworkMapViewProps {
+  defaultTab?: 'map' | 'ring' | 'crm';
+}
+
+export const NetworkMapView: React.FC<NetworkMapViewProps> = ({ defaultTab = 'map' }) => {
+  const [activeMainTab, setActiveMainTab] = useState<'map' | 'ring' | 'crm'>(defaultTab);
+
+  useEffect(() => {
+    if (defaultTab) {
+      setActiveMainTab(defaultTab);
+    }
+  }, [defaultTab]);
+  const { dataCoreList, openCoreDetail, showToast, navigateToSearchWithFilter } = useApp();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapSvgRef = useRef<SVGSVGElement>(null);
 
   // High-Resolution PNG Export Modal
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  // GIS Screenshot Reference Modal
+  const [isGisReferenceOpen, setIsGisReferenceOpen] = useState(false);
 
   // Map Engine: Google Maps Platform or Schematic Canvas
   const [viewEngine, setViewEngine] = useState<'google' | 'schematic'>('google');
@@ -382,6 +493,7 @@ export const NetworkMapView: React.FC = () => {
   const [showUplink, setShowUplink] = useState(true);
   const [showRing, setShowRing] = useState(true);
   const [showLivePulses, setShowLivePulses] = useState(true);
+  const [isLegendOpen, setIsLegendOpen] = useState(false);
 
   // Interactive Modes
   const [interactiveMode, setInteractiveMode] = useState<'explore' | 'cut_sim' | 'trace'>('explore');
@@ -466,9 +578,80 @@ export const NetworkMapView: React.FC = () => {
     'Turen & Dampit',
   ];
 
+  // Gambar 1: Poros Selatan (Kepanjen - Gondanglegi - Sumberpucung)
+  const POROS_SELATAN_NODE_IDS = useMemo(
+    () => [
+      'NODE-GI-KBG',
+      'NODE-ULP-KPJ',
+      'NODE-ULP-SBP',
+      'NODE-ULP-GDL',
+      'NODE-ULP-DMP',
+      'NODE-ULP-KBG',
+    ],
+    []
+  );
+
+  // Gambar 2: Poros Tengah & Utara (Malang Kota - Batu - Singosari)
+  const POROS_UTARA_NODE_IDS = useMemo(
+    () => [
+      'NODE-GI-KBG',
+      'NODE-UP3-MLG',
+      'NODE-ULP-DNY',
+      'NODE-ODC-BGW',
+      'NODE-TK4-MLY',
+      'NODE-ODC-SKL',
+      'NODE-ULP-BATU',
+      'NODE-ULP-BLM',
+      'NODE-ULP-SGS',
+      'NODE-GI-LWG',
+      'NODE-TK4-SDR',
+    ],
+    []
+  );
+
+  const PLAN_PERTAMA_NODE_IDS = useMemo(
+    () => [
+      'NODE-GI-LWG',
+      'NODE-GI-KBG',
+      'NODE-ULP-KPJ',
+      'NODE-ULP-GDL',
+      'NODE-ULP-DMP',
+      'NODE-ULP-SBP',
+      'NODE-ULP-KBG',
+      'NODE-UP3-MLG',
+      'NODE-ODC-SKL',
+    ],
+    []
+  );
+
+  const PLAN_PERTAMA_LINK_IDS = useMemo(
+    () => [
+      'LINK-GI-LWG-KBG',
+      'LINK-KBG-KPJ',
+      'LINK-KBG-GDL',
+      'LINK-KBG-SBP',
+      'LINK-KBG-ULP-KBG',
+      'LINK-UP3-KBG',
+      'LINK-SKL-KBG',
+      'LINK-GDL-DMP',
+      'LINK-SBP-KPJ',
+      'LINK-KPJ-GDL',
+    ],
+    []
+  );
+
   // Filter nodes based on search and region
   const filteredNodes = useMemo(() => {
     return INITIAL_NETWORK_NODES.filter(node => {
+      if (regionFilter === 'POROS_SELATAN') {
+        return POROS_SELATAN_NODE_IDS.includes(node.id);
+      }
+      if (regionFilter === 'POROS_UTARA') {
+        return POROS_UTARA_NODE_IDS.includes(node.id);
+      }
+      if (regionFilter === 'PLAN_PERTAMA') {
+        return PLAN_PERTAMA_NODE_IDS.includes(node.id);
+      }
       const matchRegion = regionFilter === 'ALL' || node.region === regionFilter;
       const matchSearch =
         !nodeSearch ||
@@ -476,18 +659,28 @@ export const NetworkMapView: React.FC = () => {
         node.code.toLowerCase().includes(nodeSearch.toLowerCase());
       return matchRegion && matchSearch;
     });
-  }, [regionFilter, nodeSearch]);
+  }, [regionFilter, nodeSearch, POROS_SELATAN_NODE_IDS, POROS_UTARA_NODE_IDS, PLAN_PERTAMA_NODE_IDS]);
 
   // Filter links based on layer visibility
   const visibleLinks = useMemo(() => {
     return NETWORK_LINKS.filter(link => {
+      if (regionFilter === 'POROS_SELATAN') {
+        return POROS_SELATAN_NODE_IDS.includes(link.fromNodeId) && POROS_SELATAN_NODE_IDS.includes(link.toNodeId);
+      }
+      if (regionFilter === 'POROS_UTARA') {
+        return POROS_UTARA_NODE_IDS.includes(link.fromNodeId) && POROS_UTARA_NODE_IDS.includes(link.toNodeId);
+      }
+      if (regionFilter === 'PLAN_PERTAMA') {
+        return PLAN_PERTAMA_LINK_IDS.includes(link.id) ||
+          (PLAN_PERTAMA_NODE_IDS.includes(link.fromNodeId) && PLAN_PERTAMA_NODE_IDS.includes(link.toNodeId));
+      }
       if (link.type === 'BACKBONE' && !showBackbone) return false;
       if (link.type === 'FEEDER' && !showFeeder) return false;
       if (link.type === 'UPLINK' && !showUplink) return false;
       if (link.type === 'RING' && !showRing) return false;
       return true;
     });
-  }, [showBackbone, showFeeder, showUplink, showRing]);
+  }, [regionFilter, showBackbone, showFeeder, showUplink, showRing, POROS_SELATAN_NODE_IDS, POROS_UTARA_NODE_IDS, PLAN_PERTAMA_LINK_IDS, PLAN_PERTAMA_NODE_IDS]);
 
   // Pan and drag handling
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -554,6 +747,10 @@ export const NetworkMapView: React.FC = () => {
         setZoomLevel(1.5);
         setPanOffset({ x: -120, y: -200 });
         break;
+      case 'PLAN_PERTAMA':
+        setZoomLevel(1.35);
+        setPanOffset({ x: -20, y: -80 });
+        break;
       default:
         setZoomLevel(1);
         setPanOffset({ x: 0, y: 0 });
@@ -569,7 +766,7 @@ export const NetworkMapView: React.FC = () => {
       } else if (!traceEndNode && traceStartNode.id !== node.id) {
         setTraceEndNode(node);
         // Compute path hops
-        const hops = [traceStartNode.id, 'NODE-MLG-KLJ', node.id];
+        const hops = [traceStartNode.id, 'NODE-GI-KBG', node.id];
         setTraceResultPath(hops);
         showToast(`Jalur optical trace ditemukan: ${traceStartNode.code} ⇄ ${node.code}`, 'success');
       } else {
@@ -874,18 +1071,92 @@ export const NetworkMapView: React.FC = () => {
 
   const getLinkColor = (link: NetworkLink) => {
     if (cutLinks.includes(link.id)) return '#ef4444'; // Red if cut
-    if (selectedLink?.id === link.id) return '#38bdf8'; // Highlighted sky
-    if (link.type === 'BACKBONE') return '#818cf8';
-    if (link.type === 'FEEDER') return '#38bdf8';
-    if (link.type === 'UPLINK') return '#06b6d4';
-    if (link.type === 'RING') return '#10b981';
-    return '#64748b';
+    if (selectedLink?.id === link.id) return '#06b6d4'; // Highlighted cyan
+    if (link.id === 'LINK-GI-LWG-KBG') return '#d946ef'; // Magenta Super Backbone
+    if (link.type === 'RING') return '#ec4899'; // Pink ring loop
+    return '#ff00ea'; // Vibrant PLN Icon Plus GIS Magenta matching screenshot
   };
 
   return (
     <div className="space-y-6 text-slate-800">
       
-      {/* Header Banner */}
+      {/* Top Level Unified Tab Switcher */}
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-2 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setActiveMainTab('map')}
+            className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+              activeMainTab === 'map'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <Network className="w-4 h-4" />
+            <span>Peta Jaringan &amp; Distribusi GIS</span>
+            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+              activeMainTab === 'map' ? 'bg-blue-500/50 text-white' : 'bg-slate-200 text-slate-700'
+            }`}>
+              16 Simpul Area 45
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveMainTab('ring')}
+            className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+              activeMainTab === 'ring'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span>Sistem Redundansi Ring Loop</span>
+            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+              activeMainTab === 'ring' ? 'bg-emerald-500/40 text-white' : 'bg-emerald-100 text-emerald-800 font-semibold'
+            }`}>
+              4 Ring Proteksi
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveMainTab('crm')}
+            className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+              activeMainTab === 'crm'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <Database className="w-4 h-4" />
+            <span>Katalog Asset &amp; CRM POP</span>
+            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+              activeMainTab === 'crm' ? 'bg-purple-500/40 text-white' : 'bg-purple-100 text-purple-800 font-semibold'
+            }`}>
+              CRM Lapangan
+            </span>
+          </button>
+        </div>
+
+        <div className="text-[11px] font-mono text-slate-500 hidden xl:flex items-center gap-2 pr-3">
+          <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+          <span>Sentral Titik 0: <strong>GI Kebon Agung</strong> ⇄ Super Backbone: <strong>GI Lawang</strong></span>
+        </div>
+      </div>
+
+      {activeMainTab === 'ring' ? (
+        <DataRingView />
+      ) : activeMainTab === 'crm' ? (
+        <PopCrmCatalogView
+          onSelectNode={node => {
+            setSelectedNode(node);
+          }}
+          onNavigateToMap={node => {
+            setSelectedNode(node);
+            setActiveMainTab('map');
+          }}
+          showToast={showToast}
+        />
+      ) : (
+        <>
+  {/* Header Banner */}
       <div className="bg-white border border-slate-200/80 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono font-bold text-blue-600 uppercase tracking-wider">
@@ -988,39 +1259,186 @@ export const NetworkMapView: React.FC = () => {
               <Route className="w-3.5 h-3.5" />
               <span>Tracing Jalur A→B</span>
             </button>
+
+            <button
+              onClick={() => setIsLegendOpen(prev => !prev)}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5 ${
+                isLegendOpen
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-blue-600 hover:bg-white/60'
+              }`}
+              title="Buka / Tutup Panel Legenda Simbol & Kode Warna"
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Legenda</span>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Quick Region Selector Bar */}
+      {/* Quick Region Selector Bar matching user screenshots */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
         <span className="text-[11px] font-mono uppercase text-slate-400 font-bold shrink-0">
-          Fokus Wilayah:
+          Fokus Topologi:
         </span>
         <button
           onClick={() => handleFocusRegion('ALL')}
-          className={`px-3 py-1 rounded-xl border transition-colors shrink-0 font-medium ${
+          className={`px-3 py-1.5 rounded-xl border transition-colors shrink-0 font-bold flex items-center gap-1.5 ${
             regionFilter === 'ALL'
-              ? 'bg-blue-600 text-white border-blue-600 font-semibold'
+              ? 'bg-blue-600 text-white border-blue-600 font-semibold shadow-xs'
               : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
           }`}
         >
-          📍 Semua Wilayah ({INITIAL_NETWORK_NODES.length})
+          <span>📍 Seluruh Area 45 (16 Simpul)</span>
         </button>
-        {regions.map(r => (
-          <button
-            key={r}
-            onClick={() => handleFocusRegion(r)}
-            className={`px-3 py-1 rounded-xl border transition-colors shrink-0 font-medium ${
-              regionFilter === r
-                ? 'bg-blue-600 text-white border-blue-600 font-semibold'
-                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            {r}
-          </button>
-        ))}
+
+        <button
+          onClick={() => {
+            handleFocusRegion('POROS_SELATAN');
+            const kpjNode = INITIAL_NETWORK_NODES.find(n => n.id === 'NODE-ULP-KPJ');
+            if (kpjNode) setSelectedNode(kpjNode);
+            showToast('Fokus: Poros Selatan Area 45 (Kepanjen - Gondanglegi - Sumberpucung)', 'info');
+          }}
+          className={`px-3 py-1.5 rounded-xl border transition-colors shrink-0 font-bold flex items-center gap-1.5 ${
+            regionFilter === 'POROS_SELATAN'
+              ? 'bg-fuchsia-600 text-white border-fuchsia-600 shadow-xs'
+              : 'bg-fuchsia-50 text-fuchsia-800 border-fuchsia-200 hover:bg-fuchsia-100'
+          }`}
+        >
+          <span>⭐ Gambar 1: Poros Selatan</span>
+          <span className="px-1.5 py-0.2 rounded bg-white/20 text-[10px]">Kepanjen · Gondanglegi · S.Pucung</span>
+        </button>
+
+        <button
+          onClick={() => {
+            handleFocusRegion('POROS_UTARA');
+            const up3Node = INITIAL_NETWORK_NODES.find(n => n.id === 'NODE-UP3-MLG');
+            if (up3Node) setSelectedNode(up3Node);
+            showToast('Fokus: Poros Tengah & Utara Area 45 (Batu - Sengkaling - Dinoyo - Singosari)', 'info');
+          }}
+          className={`px-3 py-1.5 rounded-xl border transition-colors shrink-0 font-bold flex items-center gap-1.5 ${
+            regionFilter === 'POROS_UTARA'
+              ? 'bg-cyan-600 text-white border-cyan-600 shadow-xs'
+              : 'bg-cyan-50 text-cyan-800 border-cyan-200 hover:bg-cyan-100'
+          }`}
+        >
+          <span>⭐ Gambar 2: Poros Tengah & Utara</span>
+          <span className="px-1.5 py-0.2 rounded bg-white/20 text-[10px]">Batu · Sengkaling · Kota · Singosari</span>
+        </button>
+
+        <button
+          onClick={() => {
+            handleFocusRegion('PLAN_PERTAMA');
+            const kbgNode = INITIAL_NETWORK_NODES.find(n => n.id === 'NODE-GI-KBG');
+            if (kbgNode) {
+              setSelectedNode(kbgNode);
+              showToast('Fokus: PLAN PERTAMA TOPOLOGY (Titik 0 GI Kebon Agung)', 'info');
+            }
+          }}
+          className={`px-3 py-1.5 rounded-xl border transition-colors shrink-0 font-bold flex items-center gap-1.5 ${
+            regionFilter === 'PLAN_PERTAMA'
+              ? 'bg-purple-600 text-white border-purple-600 shadow-xs'
+              : 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100'
+          }`}
+        >
+          <span>⚡ Titik 0 GI Kebon Agung & Distribusi</span>
+        </button>
       </div>
+
+      {/* Poros Selatan Context Banner (Gambar 1) */}
+      {regionFilter === 'POROS_SELATAN' && (
+        <div className="bg-fuchsia-950/20 border border-fuchsia-300 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-fuchsia-950 shadow-xs animate-fadeIn">
+          <div className="flex items-center gap-3">
+            <span className="w-8 h-8 rounded-xl bg-fuchsia-600 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-2xs">
+              G1
+            </span>
+            <div>
+              <h4 className="font-bold text-sm text-fuchsia-950 flex items-center gap-2">
+                <span>SESUAI GAMBAR 1 · KORIDOR POROS SELATAN (AREA 45)</span>
+                <span className="px-2 py-0.5 rounded-md bg-fuchsia-100 text-fuchsia-800 font-mono text-[10px]">GIS MAPSOURCE</span>
+              </h4>
+              <p className="text-fuchsia-900 text-[11px] mt-0.5">
+                Menampilkan <strong>POP ODC ULP SUMBERPUCUNG_AREA45</strong>, <strong>POP ODC ULP KEPANJEN_AREA45</strong>, <strong>POP ODC ULP GONDANGLEGI_AREA45</strong>, <strong>POP ULP DAMPIT_AREA45</strong>, dan hub sentral <strong>POP SHELTER GI KEBON AGUNG_AREA45</strong> dengan jalur backbone tebal (garis magenta).
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setIsGisReferenceOpen(true)}
+              className="px-3 py-1.5 bg-fuchsia-600 text-white font-bold rounded-xl hover:bg-fuchsia-700 transition-colors shadow-2xs flex items-center gap-1"
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Buka Gambar Asli</span>
+            </button>
+            <button
+              onClick={() => handleFocusRegion('ALL')}
+              className="px-3 py-1.5 bg-white border border-fuchsia-200 text-fuchsia-800 font-semibold rounded-xl hover:bg-fuchsia-50 transition-colors"
+            >
+              Semua Simpul
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Poros Tengah & Utara Context Banner (Gambar 2) */}
+      {regionFilter === 'POROS_UTARA' && (
+        <div className="bg-cyan-950/20 border border-cyan-300 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-cyan-950 shadow-xs animate-fadeIn">
+          <div className="flex items-center gap-3">
+            <span className="w-8 h-8 rounded-xl bg-cyan-600 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-2xs">
+              G2
+            </span>
+            <div>
+              <h4 className="font-bold text-sm text-cyan-950 flex items-center gap-2">
+                <span>SESUAI GAMBAR 2 · KORIDOR KOTA, BATU & SINGOSARI (AREA 45)</span>
+                <span className="px-2 py-0.5 rounded-md bg-cyan-100 text-cyan-800 font-mono text-[10px]">GIS MAPSOURCE</span>
+              </h4>
+              <p className="text-cyan-900 text-[11px] mt-0.5">
+                Menampilkan <strong>BATU_AREA45</strong>, <strong>GI SENGKALING_AREA45</strong>, <strong>MULYOAGUNG_ARE</strong>, <strong>APART BEGAWAN_AREA45</strong>, <strong>DINOYO_AREA45</strong>, <strong>BLIMBING_AREA45</strong>, <strong>SINGOSARI_AREA45</strong>, <strong>UP3 MALANG_AREA45</strong>, <strong>SIDOREJO_AREA45</strong>, dan <strong>GI LAWANG_AREA45</strong>.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setIsGisReferenceOpen(true)}
+              className="px-3 py-1.5 bg-cyan-600 text-white font-bold rounded-xl hover:bg-cyan-700 transition-colors shadow-2xs flex items-center gap-1"
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Buka Gambar Asli</span>
+            </button>
+            <button
+              onClick={() => handleFocusRegion('ALL')}
+              className="px-3 py-1.5 bg-white border border-cyan-200 text-cyan-800 font-semibold rounded-xl hover:bg-cyan-50 transition-colors"
+            >
+              Semua Simpul
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Plan Pertama Context Banner */}
+      {regionFilter === 'PLAN_PERTAMA' && (
+        <div className="bg-purple-50/95 border border-purple-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-purple-900 shadow-xs">
+          <div className="flex items-center gap-3">
+            <span className="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black text-sm shrink-0 shadow-2xs">
+              0
+            </span>
+            <div>
+              <h4 className="font-bold text-sm text-purple-950">
+                PLAN PERTAMA TOPOLOGY · TITIK 0 GI KEBON AGUNG
+              </h4>
+              <p className="text-purple-700 text-[11px] mt-0.5">
+                Super Backbone dari <strong>GI LAWANG_AREA45</strong> ke <strong>GI KEBON AGUNG_AREA45</strong> (Titik 0), mendistribusikan optik ke <strong>7 POP / ODC ULP</strong> (Kepanjen, Gondanglegi, Dampit, Sumberpucung, Kebon Agung, UP3 Malang, Sengkaling).
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => handleFocusRegion('ALL')}
+            className="px-3 py-1.5 bg-white border border-purple-300 text-purple-800 font-semibold rounded-xl hover:bg-purple-100 self-start sm:self-auto shrink-0 transition-colors"
+          >
+            Tampilkan Semua Simpul
+          </button>
+        </div>
+      )}
 
       {/* Control Toolbar: Layers, Search, and Zoom */}
       <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 text-xs shadow-xs">
@@ -1136,6 +1554,17 @@ export const NetworkMapView: React.FC = () => {
             </button>
           </div>
 
+          {/* Referensi GIS Asli Button */}
+          <button
+            onClick={() => setIsGisReferenceOpen(true)}
+            className="px-3 py-1.5 bg-fuchsia-600 hover:bg-fuchsia-700 text-white rounded-xl font-bold flex items-center gap-1.5 transition-all shadow-xs shrink-0"
+            title="Buka Referensi Peta Asli GIS Lapangan (Screenshot PLN Icon Plus Area 45)"
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Referensi GIS Lapangan</span>
+            <span className="sm:hidden">GIS Asli</span>
+          </button>
+
           {/* Export High-Resolution PNG Button */}
           <button
             onClick={() => setIsExportModalOpen(true)}
@@ -1183,7 +1612,7 @@ export const NetworkMapView: React.FC = () => {
                 ? 'Klik simpul pertama sebagai Titik Asal.'
                 : !traceEndNode
                 ? `Titik Asal: [${traceStartNode.code}]. Sekarang klik simpul kedua sebagai Titik Tujuan.`
-                : `Jalur Aktif: [${traceStartNode.code}] → [Master Hub Klojen] → [${traceEndNode.code}].`}
+                : `Jalur Aktif: [${traceStartNode.code}] → [Titik 0 GI Kebon Agung] → [${traceEndNode.code}].`}
             </span>
           </div>
           {traceStartNode && (
@@ -1202,6 +1631,26 @@ export const NetworkMapView: React.FC = () => {
       )}
 
       {/* ================= MAP CANVAS CONTAINER ================= */}
+      <div className="relative rounded-2xl overflow-hidden shadow-xs">
+      {viewEngine === 'google' ? (
+        <GoogleNetworkMapView
+          nodes={filteredNodes}
+          links={visibleLinks}
+          cutLinks={cutLinks}
+          selectedNode={selectedNode}
+          selectedLink={selectedLink}
+          onSelectNode={node => handleNodeClick(node)}
+          onSelectLink={link => handleLinkClick(link)}
+          showBackbone={showBackbone}
+          showFeeder={showFeeder}
+          showUplink={showUplink}
+          showRing={showRing}
+          interactiveMode={interactiveMode}
+          traceStartNode={traceStartNode}
+          traceEndNode={traceEndNode}
+          traceResultPath={traceResultPath}
+        />
+      ) : (
       <div 
         ref={containerRef}
         className="relative bg-[#070D1E] border border-slate-200/80 rounded-2xl overflow-hidden min-h-[580px] h-[640px] flex items-center justify-center select-none shadow-xs cursor-grab active:cursor-grabbing"
@@ -1229,36 +1678,116 @@ export const NetworkMapView: React.FC = () => {
             transformOrigin: 'center center',
           }}
         >
-          {/* Geographical region backdrop contour polygons */}
-          <g opacity="0.14" fill="#0284c7">
-            {/* North Malang / Singosari / Lawang */}
-            <path d="M 320 20 L 520 20 L 580 180 L 400 210 Z" />
-            {/* Batu mountainous west */}
-            <path d="M 120 120 L 320 120 L 320 280 L 120 240 Z" />
-            {/* Malang Kota Central */}
-            <path d="M 300 220 L 500 220 L 480 400 L 280 400 Z" />
-            {/* Kepanjen / Malang South */}
-            <path d="M 280 400 L 520 400 L 580 580 L 260 580 Z" />
+          {/* GIS Administrative District Boundary Polygons (Orange Contours matching screenshots) */}
+          <g opacity="0.85">
+            {/* Sumberpucung & Lahor */}
+            <polygon
+              points="140,490 280,490 280,600 140,600"
+              fill="rgba(251, 146, 60, 0.08)"
+              stroke="#ea580c"
+              strokeWidth="1.2"
+              strokeDasharray="4 2"
+            />
+            {/* Kepanjen Sentral */}
+            <polygon
+              points="290,470 440,470 440,600 290,600"
+              fill="rgba(251, 146, 60, 0.08)"
+              stroke="#ea580c"
+              strokeWidth="1.2"
+              strokeDasharray="4 2"
+            />
+            {/* Gondanglegi & Pagelaran */}
+            <polygon
+              points="450,480 580,480 580,610 450,610"
+              fill="rgba(251, 146, 60, 0.08)"
+              stroke="#ea580c"
+              strokeWidth="1.2"
+              strokeDasharray="4 2"
+            />
+            {/* Dampit & Tirtoyudo */}
+            <polygon
+              points="590,500 690,500 690,610 590,610"
+              fill="rgba(251, 146, 60, 0.08)"
+              stroke="#ea580c"
+              strokeWidth="1.2"
+              strokeDasharray="4 2"
+            />
+            {/* Kota Batu */}
+            <polygon
+              points="120,70 230,70 230,190 120,190"
+              fill="rgba(251, 146, 60, 0.08)"
+              stroke="#ea580c"
+              strokeWidth="1.2"
+              strokeDasharray="4 2"
+            />
+            {/* Dau & Sengkaling */}
+            <polygon
+              points="240,170 350,170 350,280 240,280"
+              fill="rgba(251, 146, 60, 0.08)"
+              stroke="#ea580c"
+              strokeWidth="1.2"
+              strokeDasharray="4 2"
+            />
+            {/* Lowokwaru & Dinoyo */}
+            <polygon
+              points="360,210 490,210 490,300 360,300"
+              fill="rgba(251, 146, 60, 0.08)"
+              stroke="#ea580c"
+              strokeWidth="1.2"
+              strokeDasharray="4 2"
+            />
+            {/* Blimbing & Pakis */}
+            <polygon
+              points="500,190 640,190 640,290 500,290"
+              fill="rgba(251, 146, 60, 0.08)"
+              stroke="#ea580c"
+              strokeWidth="1.2"
+              strokeDasharray="4 2"
+            />
+            {/* Singosari Industrial */}
+            <polygon
+              points="510,110 650,110 650,185 510,185"
+              fill="rgba(251, 146, 60, 0.08)"
+              stroke="#ea580c"
+              strokeWidth="1.2"
+              strokeDasharray="4 2"
+            />
+            {/* Lawang Gateway */}
+            <polygon
+              points="550,20 680,20 680,105 550,105"
+              fill="rgba(251, 146, 60, 0.08)"
+              stroke="#ea580c"
+              strokeWidth="1.2"
+              strokeDasharray="4 2"
+            />
+            {/* Pakisaji / GI Kebon Agung Titik 0 */}
+            <polygon
+              points="370,330 510,330 510,460 370,460"
+              fill="rgba(192, 38, 211, 0.06)"
+              stroke="#c026d3"
+              strokeWidth="1.4"
+            />
           </g>
 
-          {/* Region boundary dividing lines */}
-          <g stroke="rgba(100, 116, 139, 0.25)" strokeWidth="1" strokeDasharray="4 4" fill="none">
-            <line x1="100" y1="210" x2="600" y2="210" />
-            <line x1="100" y1="390" x2="600" y2="390" />
+          {/* Waterway (Bendungan Lahor & S. Brantas as seen in Gambar 1) */}
+          <g fill="none" stroke="#0ea5e9" opacity="0.35" strokeWidth="2">
+            <path d="M 130 570 Q 180 540 230 555 T 330 580" />
+            <text x="140" y="585" fill="#38bdf8" fontSize="8" fontFamily="sans-serif">Bendungan Lahor</text>
+            <text x="250" y="590" fill="#38bdf8" fontSize="8" fontFamily="sans-serif">S. Brantas</text>
           </g>
 
           {/* Geographic Region Text Labels */}
-          <text x="32" y="160" fill="rgba(148, 163, 184, 0.45)" fontSize="11" fontWeight="bold">
+          <text x="32" y="160" fill="rgba(251, 146, 60, 0.6)" fontSize="10" fontWeight="bold">
             KOTA BATU
           </text>
-          <text x="540" y="90" fill="rgba(148, 163, 184, 0.45)" fontSize="11" fontWeight="bold">
-            MALANG UTARA (LAWANG)
+          <text x="560" y="50" fill="rgba(251, 146, 60, 0.6)" fontSize="10" fontWeight="bold">
+            LAWANG (SUPER BACKBONE)
           </text>
-          <text x="500" y="320" fill="rgba(148, 163, 184, 0.45)" fontSize="11" fontWeight="bold">
+          <text x="470" y="235" fill="rgba(251, 146, 60, 0.6)" fontSize="10" fontWeight="bold">
             MALANG KOTA (CENTRAL)
           </text>
-          <text x="500" y="470" fill="rgba(148, 163, 184, 0.45)" fontSize="11" fontWeight="bold">
-            MALANG SELATAN (KEPANJEN)
+          <text x="310" y="605" fill="rgba(251, 146, 60, 0.6)" fontSize="10" fontWeight="bold">
+            MALANG SELATAN (KEPANJEN &amp; GONDANGLEGI)
           </text>
 
           {/* ================= FIBER CABLES / LINKS ================= */}
@@ -1387,42 +1916,57 @@ export const NetworkMapView: React.FC = () => {
 
                 {/* Outer halo */}
                 <circle
-                  r={node.type === 'SUPER_BACKBONE' ? 15 : node.type === 'POP_BACKBONE' ? 12 : 9.5}
-                  fill={nodeColor}
-                  fillOpacity={isSelected || isTracedNode ? 0.45 : 0.22}
-                  stroke={nodeColor}
-                  strokeWidth={isSelected || isTracedNode ? 3 : 1.5}
+                  r={node.type === 'SUPER_BACKBONE' ? 14 : 9}
+                  fill={node.id === 'NODE-GI-KBG' ? '#a855f7' : '#06b6d4'}
+                  fillOpacity={isSelected || isTracedNode ? 0.6 : 0.25}
+                  stroke={node.id === 'NODE-GI-KBG' ? '#c026d3' : '#0891b2'}
+                  strokeWidth={isSelected || isTracedNode ? 2.5 : 1.2}
                   className="group-hover:stroke-white transition-colors"
                 />
 
-                {/* Center dot */}
+                {/* Cyan center dot matching GIS point marker */}
                 <circle
-                  r={node.type === 'SUPER_BACKBONE' ? 7 : node.type === 'POP_BACKBONE' ? 5.5 : 4}
-                  fill={nodeColor}
+                  r={node.type === 'SUPER_BACKBONE' ? 6 : 4.5}
+                  fill={node.id === 'NODE-GI-KBG' ? '#7e22ce' : '#06b6d4'}
+                  stroke="#ffffff"
+                  strokeWidth="1.5"
                 />
 
-                {/* Node Code Label */}
-                <text
-                  x="0"
-                  y={node.type === 'SUPER_BACKBONE' ? -18 : -15}
-                  textAnchor="middle"
-                  fill="#f1f5f9"
-                  fontSize="10"
-                  fontWeight="bold"
-                  fontFamily="monospace"
-                  className="pointer-events-none drop-shadow-md group-hover:fill-sky-300"
-                >
-                  {node.code}
-                </text>
+                {/* White Tag Pill with exact GIS Screenshot text label */}
+                <g transform="translate(0, -22)">
+                  <rect
+                    x={-Math.max(48, node.code.length * 3.4)}
+                    y="-9"
+                    width={Math.max(96, node.code.length * 6.8)}
+                    height="18"
+                    rx="3"
+                    fill={node.id === 'NODE-GI-KBG' ? '#581c87' : 'rgba(255, 255, 255, 0.96)'}
+                    stroke={node.id === 'NODE-GI-KBG' ? '#d8b4fe' : '#94a3b8'}
+                    strokeWidth="0.8"
+                    className="shadow-md"
+                  />
+                  <text
+                    x="0"
+                    y="3"
+                    textAnchor="middle"
+                    fill={node.id === 'NODE-GI-KBG' ? '#ffffff' : '#0f172a'}
+                    fontSize="7.5"
+                    fontWeight="bold"
+                    fontFamily="monospace"
+                    className="pointer-events-none tracking-tight select-none"
+                  >
+                    {node.id === 'NODE-GI-KBG' ? '★ GI-KEBONAGUNG_AREA45 (0)' : node.code}
+                  </text>
+                </g>
 
                 {/* Badge if trace start or end */}
                 {isTraceStart && (
-                  <text x="0" y="24" textAnchor="middle" fill="#10b981" fontSize="9" fontWeight="bold" fontFamily="monospace">
+                  <text x="0" y="20" textAnchor="middle" fill="#10b981" fontSize="9" fontWeight="bold" fontFamily="monospace">
                     [START]
                   </text>
                 )}
                 {isTraceEnd && (
-                  <text x="0" y="24" textAnchor="middle" fill="#f59e0b" fontSize="9" fontWeight="bold" fontFamily="monospace">
+                  <text x="0" y="20" textAnchor="middle" fill="#f59e0b" fontSize="9" fontWeight="bold" fontFamily="monospace">
                     [DEST]
                   </text>
                 )}
@@ -1519,29 +2063,6 @@ export const NetworkMapView: React.FC = () => {
             <div className="w-0 h-0 border-x-4 border-x-transparent border-t-4 border-t-slate-900/95 mx-auto" />
           </div>
         )}
-
-        {/* Legend Overlay at bottom-left */}
-        <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md border border-slate-200 p-3.5 rounded-xl text-[11px] space-y-1.5 shadow-lg text-slate-800 z-10 hidden sm:block">
-          <span className="font-bold text-slate-900 block uppercase tracking-wider text-[10px]">
-            Legenda Simpul &amp; Kabel
-          </span>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
-            <span className="text-slate-600 font-medium">Super Backbone Gateway</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-sky-500" />
-            <span className="text-slate-600 font-medium">POP Sentral Backbone</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-            <span className="text-slate-600 font-medium">POP Akses / Ring Loop</span>
-          </div>
-          <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
-            <span className="w-3.5 h-1 bg-sky-400 rounded-full" />
-            <span className="text-slate-600">Klik kabel untuk melihat detail teknis</span>
-          </div>
-        </div>
 
         {/* ================= DRAGGABLE NETWORK MINI-MAP OVERLAY ================= */}
         <NetworkMiniMap
@@ -1664,6 +2185,25 @@ export const NetworkMapView: React.FC = () => {
               </button>
 
               <button
+                type="button"
+                onClick={() => {
+                  navigateToSearchWithFilter({
+                    type: 'segment',
+                    id: selectedLink.id,
+                    code: selectedLink.code,
+                    name: selectedLink.name,
+                    nodeIds: [selectedLink.fromNodeId, selectedLink.toNodeId],
+                  });
+                }}
+                className="w-full py-2 text-xs font-bold text-blue-700 hover:text-white bg-blue-50 hover:bg-blue-600 border border-blue-200 rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
+                title="Filter hasil di Data Core Search berdasarkan segmen kabel ini"
+              >
+                <Search className="w-3.5 h-3.5" />
+                <span>Filter di Data Core Search</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => {
                   openCoreDetail(dataCoreList[0]);
                 }}
@@ -1677,6 +2217,28 @@ export const NetworkMapView: React.FC = () => {
         )}
 
       </div>
+      )}
+
+        {/* ================= DYNAMIC SLIDE-OUT LEGEND PANEL ================= */}
+        <NetworkLegendPanel
+          isOpen={isLegendOpen}
+          onClose={() => setIsLegendOpen(false)}
+          onToggle={() => setIsLegendOpen(prev => !prev)}
+          nodes={filteredNodes}
+          links={visibleLinks}
+          cutLinks={cutLinks}
+          activeRegion={regionFilter}
+          onSelectRegion={handleFocusRegion}
+          showBackbone={showBackbone}
+          setShowBackbone={setShowBackbone}
+          showFeeder={showFeeder}
+          setShowFeeder={setShowFeeder}
+          showUplink={showUplink}
+          setShowUplink={setShowUplink}
+          showRing={showRing}
+          setShowRing={setShowRing}
+        />
+      </div>
 
       {/* Network Overview Summary Cards at Bottom */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1689,7 +2251,7 @@ export const NetworkMapView: React.FC = () => {
           <p className="text-2xl font-mono font-extrabold text-slate-900 tabular-nums">
             {INITIAL_NETWORK_NODES.length} Node
           </p>
-          <p className="text-[11px] text-slate-400">1 Super Backbone · 7 POP · 3 Access</p>
+          <p className="text-[11px] text-slate-400">1 Super Backbone (Lawang) · 1 Titik 0 (Kebon Agung) · 7 POP Distribusi</p>
         </div>
 
         <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-1">
@@ -1739,6 +2301,21 @@ export const NetworkMapView: React.FC = () => {
         nodesCount={filteredNodes.length}
         linksCount={visibleLinks.length}
       />
+
+      {/* GIS Field Screenshots Reference Modal (Gambar 1 & Gambar 2) */}
+      <GisReferenceModal
+        isOpen={isGisReferenceOpen}
+        onClose={() => setIsGisReferenceOpen(false)}
+        onSelectNodeInApp={nodeId => {
+          const targetNode = INITIAL_NETWORK_NODES.find(n => n.id === nodeId);
+          if (targetNode) {
+            setSelectedNode(targetNode);
+            showToast(`Simpul terpilih: [${targetNode.code}]`, 'info');
+          }
+        }}
+      />
+        </>
+      )}
 
     </div>
   );

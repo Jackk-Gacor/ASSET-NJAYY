@@ -39,6 +39,9 @@ import {
   HardDrive,
   Cpu,
   Info,
+  Building,
+  Users,
+  ExternalLink,
 } from 'lucide-react';
 
 interface NodeDetailDrawerProps {
@@ -54,11 +57,11 @@ export const NodeDetailDrawer: React.FC<NodeDetailDrawerProps> = ({
   onSelectNode,
   onStartTrace,
 }) => {
-  const { openCoreDetail, dataCoreList, showToast } = useApp();
+  const { openCoreDetail, dataCoreList, showToast, navigateToSearchWithFilter } = useApp();
 
   // Mode: drawer (sidebar) or modal (centered expanded)
   const [isModalMode, setIsModalMode] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'attributes' | 'ports' | 'maintenance'>('attributes');
+  const [activeTab, setActiveTab] = useState<'attributes' | 'crm_clients' | 'ports' | 'maintenance'>('attributes');
 
   // Copied coordinate feedback
   const [copiedGps, setCopiedGps] = useState(false);
@@ -103,6 +106,67 @@ export const NodeDetailDrawer: React.FC<NodeDetailDrawerProps> = ({
 
   const profile: NodeTechnicalProfile = useMemo(() => {
     return getNodeTechnicalProfile(node);
+  }, [node]);
+
+  // Connected Enterprise CRM Clients
+  const connectedClients = useMemo(() => {
+    if (!node) return [];
+    return [
+      {
+        sid: `SID-MLG-${node.code.replace(/[^A-Z0-9]/g, '').slice(0, 4)}-01`,
+        customer: `Bank Jatim Cabang ${node.region.split(' ')[0]}`,
+        service: 'IP-VPN MPLS Premium',
+        bandwidth: '500 Mbps',
+        sla: '99.98%',
+        status: 'Active',
+        interface: 'ODF T1-P01 (LC/APC)',
+      },
+      {
+        sid: `SID-MLG-${node.code.replace(/[^A-Z0-9]/g, '').slice(0, 4)}-02`,
+        customer: `Kantor Pelayanan PLN ${node.name.replace('POP ODC ', '').replace('_AREA45', '')}`,
+        service: 'Metro-Ethernet Korporat',
+        bandwidth: '1 Gbps',
+        sla: '99.99%',
+        status: 'Active',
+        interface: 'ODF T1-P02 (LC/APC)',
+      },
+      {
+        sid: `SID-MLG-${node.code.replace(/[^A-Z0-9]/g, '').slice(0, 4)}-03`,
+        customer: `Dinas Kominfo & Smart City ${node.region.split(' ')[0]}`,
+        service: 'Internet Dedicated Symmetric',
+        bandwidth: '800 Mbps',
+        sla: '99.98%',
+        status: 'Active',
+        interface: 'ODF T1-P03 (SC/UPC)',
+      },
+      {
+        sid: `SID-MLG-${node.code.replace(/[^A-Z0-9]/g, '').slice(0, 4)}-04`,
+        customer: `RSUD Daerah ${node.region.split(' ')[0]}`,
+        service: 'Internet Dedicated Medis',
+        bandwidth: '1.2 Gbps',
+        sla: '99.99%',
+        status: 'Active',
+        interface: 'ODF T1-P04 (LC/APC)',
+      },
+      {
+        sid: `SID-MLG-${node.code.replace(/[^A-Z0-9]/g, '').slice(0, 4)}-05`,
+        customer: `Sentra Perkantoran BUMN & Swasta ${node.name.split('_')[0]}`,
+        service: 'IP-VPN Corporate',
+        bandwidth: '400 Mbps',
+        sla: '99.95%',
+        status: 'Active',
+        interface: 'ODF T1-P05 (SC/UPC)',
+      },
+      {
+        sid: `SID-MLG-${node.code.replace(/[^A-Z0-9]/g, '').slice(0, 4)}-06`,
+        customer: `Aggregasi FTTH Iconnet Cluster ${node.code.slice(-3)}`,
+        service: 'FTTH Backhaul 10GE',
+        bandwidth: '2.5 Gbps',
+        sla: '99.98%',
+        status: 'Active',
+        interface: 'ODF T2-P01 (MPO-12)',
+      },
+    ];
   }, [node]);
 
   // Combine static and custom added logs
@@ -280,6 +344,25 @@ export const NodeDetailDrawer: React.FC<NodeDetailDrawerProps> = ({
                 <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 <span>{profile.siteName} · {node.region}</span>
               </p>
+              <div className="pt-1.5 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    navigateToSearchWithFilter({
+                      type: 'node',
+                      id: node.id,
+                      code: node.code,
+                      name: node.name,
+                    });
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-600 hover:text-white border border-blue-200 rounded-xl transition-all shadow-2xs"
+                  title="Filter hasil di Data Core Search berdasarkan simpul ini"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                  <span>Filter di Data Core Search</span>
+                </button>
+              </div>
             </div>
 
             {/* Header Right Actions */}
@@ -345,22 +428,37 @@ export const NodeDetailDrawer: React.FC<NodeDetailDrawerProps> = ({
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-1.5 mt-4 border-b border-slate-200 -mb-5 md:-mb-6">
+          <div className="flex items-center gap-1.5 mt-4 border-b border-slate-200 -mb-5 md:-mb-6 overflow-x-auto">
             <button
               onClick={() => setActiveTab('attributes')}
-              className={`pb-3.5 px-3 text-xs font-bold transition-all relative flex items-center gap-2 ${
+              className={`pb-3.5 px-3 text-xs font-bold transition-all relative flex items-center gap-2 shrink-0 ${
                 activeTab === 'attributes'
                   ? 'text-blue-600 border-b-2 border-blue-600'
                   : 'text-slate-500 hover:text-slate-800'
               }`}
             >
               <Cpu className="w-3.5 h-3.5" />
-              <span>Atribut Teknis Lengkap</span>
+              <span>Atribut &amp; Geotag</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('crm_clients')}
+              className={`pb-3.5 px-3 text-xs font-bold transition-all relative flex items-center gap-2 shrink-0 ${
+                activeTab === 'crm_clients'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <Building className="w-3.5 h-3.5" />
+              <span>Pelanggan &amp; Sirkit CRM</span>
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-blue-100 text-blue-700 font-bold">
+                {connectedClients.length}
+              </span>
             </button>
 
             <button
               onClick={() => setActiveTab('ports')}
-              className={`pb-3.5 px-3 text-xs font-bold transition-all relative flex items-center gap-2 ${
+              className={`pb-3.5 px-3 text-xs font-bold transition-all relative flex items-center gap-2 shrink-0 ${
                 activeTab === 'ports'
                   ? 'text-blue-600 border-b-2 border-blue-600'
                   : 'text-slate-500 hover:text-slate-800'
@@ -368,14 +466,14 @@ export const NodeDetailDrawer: React.FC<NodeDetailDrawerProps> = ({
             >
               <Server className="w-3.5 h-3.5" />
               <span>Port Fiber Optik</span>
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-blue-100 text-blue-700">
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-slate-200 text-slate-700">
                 {profile.ports.length}
               </span>
             </button>
 
             <button
               onClick={() => setActiveTab('maintenance')}
-              className={`pb-3.5 px-3 text-xs font-bold transition-all relative flex items-center gap-2 ${
+              className={`pb-3.5 px-3 text-xs font-bold transition-all relative flex items-center gap-2 shrink-0 ${
                 activeTab === 'maintenance'
                   ? 'text-blue-600 border-b-2 border-blue-600'
                   : 'text-slate-500 hover:text-slate-800'
@@ -574,50 +672,99 @@ export const NodeDetailDrawer: React.FC<NodeDetailDrawerProps> = ({
                 </div>
               </div>
 
-              {/* Geographic Coordinates & Facility Site */}
-              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4.5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-blue-600" />
-                    Lokasi Fisik &amp; Informasi Kontak PIC
-                  </span>
-                  <button
-                    onClick={handleCopyGps}
-                    className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 bg-white border border-slate-200 px-2 py-0.5 rounded-lg transition-colors shadow-2xs"
-                  >
-                    {copiedGps ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                    <span>{copiedGps ? 'Tersalin' : 'Salin GPS'}</span>
-                  </button>
+              {/* Geographic Coordinates & Facility Site (Clean CRM Style) */}
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-5 space-y-4 shadow-xs">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                      <MapPin className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-slate-900 uppercase tracking-wider block">
+                        Geotagging &amp; Koordinat Presisi
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-mono">Standar Geodesi WGS84 · 6 Desimal</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={handleCopyGps}
+                      className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 bg-blue-50/70 border border-blue-200 px-2.5 py-1 rounded-lg transition-colors"
+                      title="Salin Latitude & Longitude"
+                    >
+                      {copiedGps ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedGps ? 'Tersalin' : 'Salin Lat, Lng'}</span>
+                    </button>
+
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${node.lat},${node.lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 px-2.5 py-1 rounded-lg transition-colors"
+                      title="Buka lokasi ini di Google Maps"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Google Maps</span>
+                    </a>
+                  </div>
                 </div>
 
-                <div className="space-y-2 text-xs">
+                <div className="space-y-3 text-xs">
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Alamat Bangunan / Shelter</span>
-                    <span className="font-medium text-slate-800">{profile.address}</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">
+                      Alamat Lapangan Resmi
+                    </span>
+                    <span className="font-medium text-slate-800 text-xs sm:text-[13px] leading-relaxed block mt-0.5">
+                      {node.address || profile.address}
+                    </span>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 border-t border-slate-200/60 text-[11px]">
-                    <div>
-                      <span className="text-slate-400 block">Koordinat Latitude</span>
-                      <span className="font-mono font-bold text-slate-800">{node.lat.toFixed(6)}° S</span>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-2 border-t border-slate-100">
+                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
+                      <span className="text-slate-400 block text-[10px] font-mono">LATITUDE</span>
+                      <span className="font-mono font-bold text-slate-900 text-xs">{node.lat.toFixed(6)}°</span>
                     </div>
-                    <div>
-                      <span className="text-slate-400 block">Koordinat Longitude</span>
-                      <span className="font-mono font-bold text-slate-800">{node.lng.toFixed(6)}° E</span>
+                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
+                      <span className="text-slate-400 block text-[10px] font-mono">LONGITUDE</span>
+                      <span className="font-mono font-bold text-slate-900 text-xs">{node.lng.toFixed(6)}°</span>
                     </div>
-                    <div>
-                      <span className="text-slate-400 block">Elevasi Topografi</span>
-                      <span className="font-mono font-bold text-slate-800">{profile.elevationMasl} mdpl</span>
+                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 col-span-2 sm:col-span-1">
+                      <span className="text-slate-400 block text-[10px] font-mono">ELEVASI TOPOGRAFI</span>
+                      <span className="font-mono font-bold text-slate-900 text-xs">{profile.elevationMasl} mdpl</span>
                     </div>
                   </div>
-                  <div className="flex flex-wrap items-center justify-between pt-2 border-t border-slate-200/60 text-xs">
-                    <div className="flex items-center gap-1.5 text-slate-700">
-                      <User className="w-3.5 h-3.5 text-slate-400" />
-                      <span className="font-semibold">{profile.picName}</span>
+
+                  {/* PIC Divisi Asset with Photo */}
+                  <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80 p-3 rounded-xl border border-slate-200/80">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={node.picAvatar || (node.id === 'NODE-GI-KBG' ? '/assets/aistudio/image_c3e39bbf.png' : '/assets/aistudio/image_53ba5752.png')}
+                        alt="PIC Asset"
+                        className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs shrink-0"
+                      />
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-slate-900 text-xs">
+                            {node.picName || profile.picName}
+                          </span>
+                          <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 bg-blue-100 text-blue-700 rounded font-mono">
+                            Divisi Asset
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-slate-500 block">
+                          PIC Pemeliharaan &amp; Drafting GIS Area 45
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1.5 text-blue-600 font-mono text-[11px]">
-                      <Phone className="w-3.5 h-3.5 text-slate-400" />
-                      <span>{profile.picPhone}</span>
-                    </div>
+
+                    <a
+                      href={`tel:${node.picPhone || profile.picPhone}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-2xs self-start sm:self-auto shrink-0"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-blue-600" />
+                      <span className="font-mono">{node.picPhone || profile.picPhone}</span>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -696,6 +843,68 @@ export const NodeDetailDrawer: React.FC<NodeDetailDrawerProps> = ({
                     <p className="font-mono text-[11px] leading-relaxed text-slate-700">{testResult}</p>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: CRM ENTERPRISE CLIENTS & ACTIVE CIRCUITS */}
+          {activeTab === 'crm_clients' && (
+            <div className="space-y-4 animate-fadeIn">
+              <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <Building className="w-4 h-4 text-blue-600" />
+                    Daftar Pelanggan &amp; Layanan Sirkit Aktif
+                  </span>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Pelanggan institusi, korporat, perbankan, dan instansi PLN yang terhubung langsung ke POP ini.
+                  </p>
+                </div>
+                <span className="text-xs font-mono font-bold px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl shrink-0 self-start sm:self-auto">
+                  {connectedClients.length} Sirkit Beroperasi
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {connectedClients.map(client => (
+                  <div
+                    key={client.sid}
+                    className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs hover:border-blue-300 transition-all space-y-2.5"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                          {client.sid}
+                        </span>
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900">
+                          {client.customer}
+                        </h4>
+                      </div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full shrink-0 self-start sm:self-auto">
+                        ● {client.status}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-slate-100 text-xs">
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Jenis Layanan</span>
+                        <span className="font-semibold text-slate-800">{client.service}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Bandwidth</span>
+                        <span className="font-mono font-bold text-blue-600">{client.bandwidth}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Interface Port</span>
+                        <span className="font-mono text-slate-700 text-[11px]">{client.interface}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[10px]">Target SLA</span>
+                        <span className="font-mono font-bold text-emerald-600">{client.sla}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}

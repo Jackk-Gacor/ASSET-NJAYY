@@ -257,10 +257,18 @@ export const PublicAboutAsset: React.FC = () => {
                         key={member.id}
                         className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition-shadow flex flex-col"
                       >
-                        <div className={`relative w-full aspect-[4/5] ${member.bgColor} flex items-center justify-center`}>
-                          <span className="text-4xl font-black text-slate-900/30 select-none">
-                            {member.name.split(' ').map(n => n[0]).join('')}
-                          </span>
+                        <div className={`relative w-full aspect-[4/5] ${member.bgColor} flex items-center justify-center overflow-hidden`}>
+                          {member.photoUrl ? (
+                            <img
+                              src={member.photoUrl}
+                              alt={member.name}
+                              className={`w-full h-full object-cover ${member.photoPosition || 'object-top'}`}
+                            />
+                          ) : (
+                            <span className="text-4xl font-black text-slate-900/30 select-none">
+                              {member.name.split(' ').map(n => n[0]).join('')}
+                            </span>
+                          )}
                           <div className="absolute bottom-3 left-3 w-7 h-7 rounded-full bg-white/90 flex items-center justify-center shadow-xs border border-white">
                             <ImageIcon className="w-3.5 h-3.5 text-slate-400" />
                           </div>

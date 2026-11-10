@@ -111,6 +111,170 @@ const GoogleMapPolyline: React.FC<{
   return null;
 };
 
+// Polygon component for Administrative / GIS Area Boundaries
+const GoogleMapPolygon: React.FC<{
+  paths: google.maps.LatLngLiteral[];
+  strokeColor?: string;
+  strokeWeight?: number;
+  strokeOpacity?: number;
+  fillColor?: string;
+  fillOpacity?: number;
+}> = ({
+  paths,
+  strokeColor = '#ea580c',
+  strokeWeight = 1.5,
+  strokeOpacity = 0.85,
+  fillColor = '#fed7aa',
+  fillOpacity = 0.12,
+}) => {
+  const map = useMap();
+  const polygonRef = useRef<google.maps.Polygon | null>(null);
+
+  useEffect(() => {
+    if (!map || paths.length < 3) return;
+
+    const polygon = new google.maps.Polygon({
+      paths,
+      strokeColor,
+      strokeWeight,
+      strokeOpacity,
+      fillColor,
+      fillOpacity,
+      clickable: false,
+      map,
+      zIndex: 2,
+    });
+
+    polygonRef.current = polygon;
+    return () => {
+      polygon.setMap(null);
+    };
+  }, [map, paths, strokeColor, strokeWeight, strokeOpacity, fillColor, fillOpacity]);
+
+  return null;
+};
+
+// District boundaries approximating Malang Raya administrative areas shown in screenshots
+const GIS_DISTRICT_BOUNDARIES: { name: string; paths: google.maps.LatLngLiteral[] }[] = [
+  {
+    name: 'Sumberpucung & Lahor',
+    paths: [
+      { lat: -8.135, lng: 112.460 },
+      { lat: -8.132, lng: 112.525 },
+      { lat: -8.175, lng: 112.528 },
+      { lat: -8.182, lng: 112.465 },
+    ],
+  },
+  {
+    name: 'Kepanjen Sentral',
+    paths: [
+      { lat: -8.110, lng: 112.545 },
+      { lat: -8.105, lng: 112.605 },
+      { lat: -8.158, lng: 112.610 },
+      { lat: -8.162, lng: 112.548 },
+    ],
+  },
+  {
+    name: 'Gondanglegi & Pagelaran',
+    paths: [
+      { lat: -8.145, lng: 112.615 },
+      { lat: -8.140, lng: 112.675 },
+      { lat: -8.200, lng: 112.680 },
+      { lat: -8.205, lng: 112.618 },
+    ],
+  },
+  {
+    name: 'Dampit & Tirtoyudo',
+    paths: [
+      { lat: -8.185, lng: 112.725 },
+      { lat: -8.180, lng: 112.795 },
+      { lat: -8.235, lng: 112.800 },
+      { lat: -8.240, lng: 112.730 },
+    ],
+  },
+  {
+    name: 'Kota Batu',
+    paths: [
+      { lat: -7.840, lng: 112.495 },
+      { lat: -7.835, lng: 112.565 },
+      { lat: -7.895, lng: 112.570 },
+      { lat: -7.900, lng: 112.500 },
+    ],
+  },
+  {
+    name: 'Dau & Sengkaling',
+    paths: [
+      { lat: -7.895, lng: 112.565 },
+      { lat: -7.890, lng: 112.612 },
+      { lat: -7.940, lng: 112.615 },
+      { lat: -7.945, lng: 112.568 },
+    ],
+  },
+  {
+    name: 'Lowokwaru & Dinoyo',
+    paths: [
+      { lat: -7.925, lng: 112.600 },
+      { lat: -7.920, lng: 112.645 },
+      { lat: -7.960, lng: 112.648 },
+      { lat: -7.962, lng: 112.602 },
+    ],
+  },
+  {
+    name: 'Klojen (Sentral Kota)',
+    paths: [
+      { lat: -7.960, lng: 112.615 },
+      { lat: -7.955, lng: 112.655 },
+      { lat: -7.995, lng: 112.658 },
+      { lat: -8.000, lng: 112.618 },
+    ],
+  },
+  {
+    name: 'Blimbing',
+    paths: [
+      { lat: -7.915, lng: 112.635 },
+      { lat: -7.910, lng: 112.675 },
+      { lat: -7.955, lng: 112.680 },
+      { lat: -7.958, lng: 112.638 },
+    ],
+  },
+  {
+    name: 'Singosari',
+    paths: [
+      { lat: -7.865, lng: 112.640 },
+      { lat: -7.860, lng: 112.695 },
+      { lat: -7.915, lng: 112.700 },
+      { lat: -7.918, lng: 112.645 },
+    ],
+  },
+  {
+    name: 'Sidorejo & Jabung',
+    paths: [
+      { lat: -7.860, lng: 112.685 },
+      { lat: -7.855, lng: 112.730 },
+      { lat: -7.905, lng: 112.735 },
+      { lat: -7.910, lng: 112.690 },
+    ],
+  },
+  {
+    name: 'Lawang',
+    paths: [
+      { lat: -7.810, lng: 112.670 },
+      { lat: -7.805, lng: 112.725 },
+      { lat: -7.860, lng: 112.728 },
+      { lat: -7.865, lng: 112.675 },
+    ],
+  },
+  {
+    name: 'Pakisaji & Kebon Agung',
+    paths: [
+      { lat: -7.990, lng: 112.585 },
+      { lat: -7.985, lng: 112.650 },
+      { lat: -8.045, lng: 112.655 },
+      { lat: -8.050, lng: 112.590 },
+    ],
+  },
+];
+
 // Traffic Layer component
 const GoogleTrafficLayer: React.FC<{ enabled: boolean }> = ({ enabled }) => {
   const map = useMap();
@@ -179,6 +343,7 @@ export const GoogleNetworkMapView: React.FC<GoogleNetworkMapViewProps> = ({
 }) => {
   const [mapType, setMapType] = useState<'roadmap' | 'satellite' | 'hybrid' | 'terrain'>('roadmap');
   const [showTraffic, setShowTraffic] = useState(false);
+  const [showDistrictPolygons, setShowDistrictPolygons] = useState(true);
   const [triggerFit, setTriggerFit] = useState(0);
 
   // Center of Malang Raya
@@ -197,9 +362,11 @@ export const GoogleNetworkMapView: React.FC<GoogleNetworkMapViewProps> = ({
 
   // Map nodes to dictionary for quick coordinate lookup
   const nodeCoordsMap = useMemo(() => {
-    const map = new Map<string, { lat: number; lng: number }>();
-    nodes.forEach(n => map.set(n.id, { lat: n.lat, lng: n.lng }));
-    return map;
+    const record: Record<string, { lat: number; lng: number }> = {};
+    nodes.forEach(n => {
+      record[n.id] = { lat: n.lat, lng: n.lng };
+    });
+    return record;
   }, [nodes]);
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyAb3UFkQhSE3-X5U9SA2f3l59PKduZevxI';
@@ -220,10 +387,24 @@ export const GoogleNetworkMapView: React.FC<GoogleNetworkMapViewProps> = ({
           <GoogleTrafficLayer enabled={showTraffic} />
           <MapBoundsController nodes={nodes} selectedNode={selectedNode} triggerFit={triggerFit} />
 
-          {/* Render Real GPS Fiber Optic Polylines */}
+          {/* Render GIS Administrative District Polygons (Orange Contours matching screenshots) */}
+          {showDistrictPolygons &&
+            GIS_DISTRICT_BOUNDARIES.map(district => (
+              <GoogleMapPolygon
+                key={`gis-district-${district.name}`}
+                paths={district.paths}
+                strokeColor="#ea580c"
+                strokeWeight={1.5}
+                strokeOpacity={0.8}
+                fillColor="#fed7aa"
+                fillOpacity={0.12}
+              />
+            ))}
+
+          {/* Render Real GPS Fiber Optic Polylines in Fluorescent Magenta (#ff00ea / PLN Icon Plus GIS) */}
           {visibleLinks.map(link => {
-            const fromCoord = nodeCoordsMap.get(link.fromNodeId);
-            const toCoord = nodeCoordsMap.get(link.toNodeId);
+            const fromCoord = nodeCoordsMap[link.fromNodeId];
+            const toCoord = nodeCoordsMap[link.toNodeId];
             if (!fromCoord || !toCoord) return null;
 
             const isCut = cutLinks.includes(link.id);
@@ -233,18 +414,31 @@ export const GoogleNetworkMapView: React.FC<GoogleNetworkMapViewProps> = ({
               traceResultPath.includes(link.fromNodeId) &&
               traceResultPath.includes(link.toNodeId);
 
-            let strokeColor = '#38bdf8';
-            if (link.type === 'BACKBONE') strokeColor = '#4f46e5';
-            else if (link.type === 'FEEDER') strokeColor = '#0284c7';
-            else if (link.type === 'RING') strokeColor = '#10b981';
-            else if (link.type === 'UPLINK') strokeColor = '#06b6d4';
+            // Vibrant fluorescent magenta matching the user's GIS screenshot
+            let strokeColor = '#ff00ea';
+            let strokeW = link.type === 'BACKBONE' ? 4.5 : 3.5;
+
+            if (isCut) {
+              strokeColor = '#ef4444';
+            } else if (isTraced) {
+              strokeColor = '#10b981';
+            } else if (isSelected) {
+              strokeColor = '#06b6d4';
+            } else if (link.id === 'LINK-GI-LWG-KBG') {
+              strokeColor = '#d946ef'; // Magenta Super Backbone
+              strokeW = 5.5;
+            } else if (link.type === 'RING') {
+              strokeColor = '#ec4899'; // Pink ring loop
+            } else if (link.type === 'FEEDER') {
+              strokeColor = '#e11499';
+            }
 
             return (
               <GoogleMapPolyline
                 key={`gmap-link-${link.id}`}
                 path={[fromCoord, toCoord]}
                 strokeColor={strokeColor}
-                strokeWeight={link.type === 'BACKBONE' ? 4 : 3}
+                strokeWeight={strokeW}
                 isCut={isCut}
                 isSelected={isSelected}
                 isTraced={isTraced}
@@ -263,6 +457,7 @@ export const GoogleNetworkMapView: React.FC<GoogleNetworkMapViewProps> = ({
             const isWarning = node.status === 'Warning';
             const isSuper = node.type === 'SUPER_BACKBONE';
             const isBackbone = node.type === 'POP_BACKBONE';
+            const isTitikNol = node.id === 'NODE-GI-KBG';
 
             return (
               <AdvancedMarker
@@ -270,58 +465,56 @@ export const GoogleNetworkMapView: React.FC<GoogleNetworkMapViewProps> = ({
                 position={{ lat: node.lat, lng: node.lng }}
                 onClick={() => onSelectNode(node)}
                 title={`${node.name} (${node.code})`}
-                zIndex={isSelected ? 50 : isSuper ? 30 : 20}
+                zIndex={isTitikNol ? 70 : isSelected ? 50 : isSuper ? 30 : 20}
               >
                 <div className="relative group cursor-pointer flex flex-col items-center">
-                  {/* Ping Animation for Selected Node */}
-                  {(isSelected || isTraceStart || isTraceEnd) && (
-                    <span className="absolute -inset-2 rounded-full bg-blue-500/40 animate-ping" />
+                  {/* Ping Animation for Titik Nol or Selected Node */}
+                  {(isTitikNol || isSelected || isTraceStart || isTraceEnd) && (
+                    <span
+                      className={`absolute -inset-2.5 rounded-full animate-ping pointer-events-none ${
+                        isTitikNol ? 'bg-purple-500/50' : 'bg-blue-500/40'
+                      }`}
+                    />
                   )}
 
-                  {/* Marker Pin Badge */}
+                  {/* Marker Pin Badge with Authentic GIS Screenshot Aesthetic */}
                   <div
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl shadow-lg border text-white transition-all transform hover:scale-110 ${
-                      isTraceStart
-                        ? 'bg-emerald-600 border-emerald-400 ring-2 ring-emerald-300'
-                        : isTraceEnd
-                        ? 'bg-amber-600 border-amber-400 ring-2 ring-amber-300'
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md shadow-md border transition-all transform hover:scale-110 ${
+                      isTitikNol
+                        ? 'bg-purple-900/90 border-purple-400 text-white ring-2 ring-purple-300'
                         : isSelected
-                        ? 'bg-blue-600 border-white ring-2 ring-blue-400 scale-105'
-                        : isSuper
-                        ? 'bg-indigo-700 border-indigo-300'
-                        : isBackbone
-                        ? 'bg-sky-600 border-sky-300'
-                        : 'bg-emerald-600 border-emerald-300'
+                        ? 'bg-blue-600 border-white text-white ring-2 ring-blue-400 scale-105'
+                        : isTraceStart
+                        ? 'bg-emerald-600 border-emerald-300 text-white'
+                        : isTraceEnd
+                        ? 'bg-amber-600 border-amber-300 text-white'
+                        : 'bg-white/95 border-slate-300 text-slate-900'
                     }`}
                   >
                     <span
-                      className={`w-2 h-2 rounded-full shrink-0 ${
-                        isWarning
-                          ? 'bg-amber-300 animate-pulse'
-                          : 'bg-white'
+                      className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                        isTitikNol
+                          ? 'bg-amber-300 ring-2 ring-purple-300 animate-pulse'
+                          : isWarning
+                          ? 'bg-amber-500 animate-pulse'
+                          : 'bg-cyan-500 ring-2 ring-cyan-200'
                       }`}
                     />
                     <div className="flex flex-col">
-                      <span className="text-[11px] font-mono font-bold leading-tight uppercase whitespace-nowrap">
-                        {node.code}
+                      <span className="text-[10px] font-mono font-bold leading-tight uppercase whitespace-nowrap tracking-tight">
+                        {isTitikNol ? '★ GI-KEBONAGUNG_AREA45 (TITIK 0)' : node.code}
                       </span>
                     </div>
                   </div>
 
                   {/* Pin Point Arrow */}
                   <div
-                    className={`w-0 h-0 border-x-4 border-x-transparent border-t-5 ${
-                      isTraceStart
-                        ? 'border-t-emerald-600'
-                        : isTraceEnd
-                        ? 'border-t-amber-600'
+                    className={`w-0 h-0 border-x-3 border-x-transparent border-t-4 ${
+                      isTitikNol
+                        ? 'border-t-purple-800'
                         : isSelected
                         ? 'border-t-blue-600'
-                        : isSuper
-                        ? 'border-t-indigo-700'
-                        : isBackbone
-                        ? 'border-t-sky-600'
-                        : 'border-t-emerald-600'
+                        : 'border-t-slate-400'
                     }`}
                   />
                 </div>
@@ -357,6 +550,19 @@ export const GoogleNetworkMapView: React.FC<GoogleNetworkMapViewProps> = ({
         </div>
 
         <button
+          onClick={() => setShowDistrictPolygons(!showDistrictPolygons)}
+          className={`px-2.5 py-1.5 rounded-xl font-semibold flex items-center gap-1.5 transition-colors ${
+            showDistrictPolygons
+              ? 'bg-amber-50 text-amber-800 border border-amber-300'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+          title="Tampilkan / Sembunyikan Batas Wilayah Kecamatan (GIS Poligon Oranye)"
+        >
+          <Layers className="w-3.5 h-3.5 text-amber-600" />
+          <span className="hidden sm:inline">Zona Poligon GIS</span>
+        </button>
+
+        <button
           onClick={() => setShowTraffic(!showTraffic)}
           className={`px-2.5 py-1.5 rounded-xl font-semibold flex items-center gap-1.5 transition-colors ${
             showTraffic
@@ -382,23 +588,22 @@ export const GoogleNetworkMapView: React.FC<GoogleNetworkMapViewProps> = ({
       {/* Map Legend Overlay at Bottom Left */}
       <div className="absolute bottom-4 left-4 z-10 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-lg border border-slate-200 text-[11px] space-y-1.5 text-slate-800 hidden sm:block">
         <span className="font-bold text-slate-900 block uppercase tracking-wider text-[10px]">
-          Google Maps · Lapisan GIS Fiber Optik
+          PLN Icon Plus GIS · Standar Area 45
         </span>
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-indigo-600" />
-          <span>Super Backbone Gateway (100G)</span>
+          <span className="w-3 h-1 bg-[#ff00ea] rounded" />
+          <span className="font-medium text-slate-700">Jalur Transmisi Optik (Magenta)</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-sky-600" />
-          <span>POP Sentral Backbone Telko</span>
+          <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 border border-slate-400" />
+          <span className="font-medium text-slate-700">POP ODC & Titik Distribusi (_AREA45)</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-          <span>POP Distribusi Akses / Ring Loop</span>
+          <span className="w-2.5 h-2.5 rounded-full bg-purple-700 border border-purple-300" />
+          <span className="font-medium text-slate-700">Titik 0 Sentral (GI Kebon Agung)</span>
         </div>
         <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
-          <span className="w-3 h-0.5 bg-blue-500 rounded" />
-          <span className="text-slate-500">Klik pin POP atau jalur untuk rincian teknis</span>
+          <span className="text-[10px] text-slate-500">Sesuai Dokumen GIS Gambar 1 & Gambar 2</span>
         </div>
       </div>
     </div>
