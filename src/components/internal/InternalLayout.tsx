@@ -21,6 +21,7 @@ import {
   CheckCircle,
   PanelLeft,
   PanelTop,
+  Users,
 } from 'lucide-react';
 
 interface InternalLayoutProps {
@@ -47,6 +48,7 @@ export const InternalLayout: React.FC<InternalLayoutProps> = ({ children }) => {
     currentView,
     setCurrentView,
     currentUser,
+    canSwitchRole,
     switchRole,
     logout,
     toast,
@@ -155,6 +157,9 @@ export const InternalLayout: React.FC<InternalLayoutProps> = ({ children }) => {
       title: 'Laporan & Sistem',
       items: [
         { id: 'reports', label: 'Reports', icon: BarChart2 },
+        ...(currentUser.role === 'Admin'
+          ? [{ id: 'admin-accounts', label: 'Daftar Akun Portal', icon: Users }]
+          : []),
         { id: 'settings', label: 'Settings', icon: SlidersHorizontal, isAction: true },
       ],
     },
@@ -199,6 +204,8 @@ export const InternalLayout: React.FC<InternalLayoutProps> = ({ children }) => {
         return { group: 'Peta & Topologi', title: 'Logical Topology' };
       case 'reports':
         return { group: 'Laporan & Sistem', title: 'Reports' };
+      case 'admin-accounts':
+        return { group: 'Laporan & Sistem', title: 'Daftar Akun Portal (Admin)' };
       default:
         return { group: 'Utama', title: 'Dashboard' };
     }
@@ -465,45 +472,54 @@ export const InternalLayout: React.FC<InternalLayoutProps> = ({ children }) => {
                 <span className="text-[11px] font-semibold text-emerald-700">Active</span>
               </div>
 
-              {/* Role Switcher */}
-              <div className="relative hidden sm:block">
-                <button
-                  onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-medium transition-colors bg-slate-100 hover:bg-slate-200/80 border-slate-200 text-slate-700"
-                >
+              {/* Role Switcher (Admin only) or Locked Role Badge */}
+              {canSwitchRole ? (
+                <div className="relative hidden sm:block">
+                  <button
+                    onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-medium transition-colors bg-slate-100 hover:bg-slate-200/80 border-slate-200 text-slate-700"
+                  >
+                    <Shield className="w-3.5 h-3.5 text-blue-600" />
+                    <span className="text-slate-500">Role:</span>
+                    <span className="font-semibold">{getRoleDisplayLabel(currentUser.role)}</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  </button>
+
+                  {roleDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-2xl py-1 z-50 text-slate-800">
+                      <div className="px-3 py-2 border-b border-slate-100 text-[10px] font-mono font-bold text-slate-400 uppercase">
+                        Simulasi Ganti Role
+                      </div>
+                      {availableRoles.map(role => (
+                        <button
+                          key={role}
+                          onClick={() => {
+                            switchRole(role);
+                            setRoleDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-slate-50 ${
+                            currentUser.role === role
+                              ? 'text-blue-600 font-bold bg-blue-50/50'
+                              : 'text-slate-700'
+                          }`}
+                        >
+                          <span>{getRoleDisplayLabel(role)}</span>
+                          {currentUser.role === role && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-medium bg-slate-100 border-slate-200 text-slate-700">
                   <Shield className="w-3.5 h-3.5 text-blue-600" />
                   <span className="text-slate-500">Role:</span>
                   <span className="font-semibold">{getRoleDisplayLabel(currentUser.role)}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                </button>
-
-                {roleDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-2xl py-1 z-50 text-slate-800">
-                    <div className="px-3 py-2 border-b border-slate-100 text-[10px] font-mono font-bold text-slate-400 uppercase">
-                      Simulasi Ganti Role
-                    </div>
-                    {availableRoles.map(role => (
-                      <button
-                        key={role}
-                        onClick={() => {
-                          switchRole(role);
-                          setRoleDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-slate-50 ${
-                          currentUser.role === role
-                            ? 'text-blue-600 font-bold bg-blue-50/50'
-                            : 'text-slate-700'
-                        }`}
-                      >
-                        <span>{getRoleDisplayLabel(role)}</span>
-                        {currentUser.role === role && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                  <span className="text-[10px] text-slate-400 font-mono">(Terkunci)</span>
+                </div>
+              )}
 
               {/* Logout Button */}
               <button
@@ -668,29 +684,38 @@ export const InternalLayout: React.FC<InternalLayoutProps> = ({ children }) => {
                 </div>
               </div>
 
-              <div>
-                <label className="font-semibold text-slate-700 block mb-1.5">
-                  Simulasi Role Pengguna Aktif
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {availableRoles.map(role => (
-                    <button
-                      key={role}
-                      onClick={() => {
-                        switchRole(role);
-                        setSettingsModalOpen(false);
-                      }}
-                      className={`p-2.5 rounded-xl border text-left font-medium transition-colors ${
-                        currentUser.role === role
-                          ? 'bg-blue-50 border-blue-400 text-blue-700 font-bold'
-                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                      }`}
-                    >
-                      {getRoleDisplayLabel(role)}
-                    </button>
-                  ))}
+              {canSwitchRole ? (
+                <div>
+                  <label className="font-semibold text-slate-700 block mb-1.5">
+                    Simulasi Role Pengguna Aktif
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {availableRoles.map(role => (
+                      <button
+                        key={role}
+                        onClick={() => {
+                          switchRole(role);
+                          setSettingsModalOpen(false);
+                        }}
+                        className={`p-2.5 rounded-xl border text-left font-medium transition-colors ${
+                          currentUser.role === role
+                            ? 'bg-blue-50 border-blue-400 text-blue-700 font-bold'
+                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        {getRoleDisplayLabel(role)}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">
+                  <span className="font-semibold text-slate-800 block">Hak Akses Role Terkunci</span>
+                  <span className="text-[11px]">
+                    Akun ini terkunci pada role {getRoleDisplayLabel(currentUser.role)} dan tidak dapat berpindah ke role lain.
+                  </span>
+                </div>
+              )}
 
               <div className="pt-3 border-t border-slate-100 space-y-2">
                 <div className="flex items-center justify-between">

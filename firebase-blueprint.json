@@ -1,0 +1,100 @@
+{
+  "entities": {
+    "Feeder": {
+      "title": "Feeder",
+      "description": "E2E Asset Feeder drawing & optical distribution record",
+      "type": "object",
+      "properties": {
+        "feederCode": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "hostnameOlt": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "statusReport": { "type": "string", "enum": ["DONE", "PROGRESS"] },
+        "actualDone": { "type": "string", "maxLength": 32 },
+        "reportDone": { "type": "string", "maxLength": 32 },
+        "pic": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "datacoreVisio": { "type": "string", "maxLength": 200 },
+        "datacoreVisioUrl": { "type": "string", "maxLength": 500 },
+        "mymaps": { "type": "string", "maxLength": 200 },
+        "mymapsUrl": { "type": "string", "maxLength": 500 },
+        "keterangan": { "type": "string", "maxLength": 500 },
+        "ownerId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["feederCode", "hostnameOlt", "statusReport", "pic", "ownerId", "createdAt", "updatedAt"]
+    },
+    "Uplink": {
+      "title": "Uplink",
+      "description": "E2E Uplink transmission & schematic drawing record",
+      "type": "object",
+      "properties": {
+        "uplinkCode": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "hostnameOlt": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "statusReport": { "type": "string", "enum": ["DONE", "PROGRESS"] },
+        "actualDone": { "type": "string", "maxLength": 32 },
+        "reportDone": { "type": "string", "maxLength": 32 },
+        "pic": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "datacoreVisio": { "type": "string", "maxLength": 200 },
+        "datacoreVisioUrl": { "type": "string", "maxLength": 500 },
+        "mymaps": { "type": "string", "maxLength": 200 },
+        "mymapsUrl": { "type": "string", "maxLength": 500 },
+        "schematicE2E": { "type": "string", "maxLength": 240 },
+        "schematicE2EUrl": { "type": "string", "maxLength": 500 },
+        "keterangan": { "type": "string", "maxLength": 500 },
+        "ownerId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uplinkCode", "hostnameOlt", "statusReport", "pic", "ownerId", "createdAt", "updatedAt"]
+    },
+    "Sid": {
+      "title": "Sid",
+      "description": "Customer Service ID (SID) linking feeder and uplink paths",
+      "type": "object",
+      "properties": {
+        "sidNumber": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "customerName": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "serviceType": { "type": "string", "enum": ["IP-VPN", "Metronet", "Astinet", "Clear Channel"] },
+        "relatedFeederId": { "type": "string", "maxLength": 64 },
+        "relatedUplinkId": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "enum": ["Active", "Survey", "Commissioning"] },
+        "bandwidthMbps": { "type": "number" },
+        "pic": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "ownerId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sidNumber", "customerName", "serviceType", "status", "bandwidthMbps", "pic", "ownerId", "createdAt", "updatedAt"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated team member profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "role": { "type": "string", "enum": ["Viewer", "Engineering", "Tim Data", "Field", "Supervisor", "Admin"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "displayName", "role", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/feeders/{feederId}": {
+      "schema": { "$ref": "#/entities/Feeder" },
+      "description": "Stores E2E Asset Feeder drawing and link records"
+    },
+    "/uplinks/{uplinkId}": {
+      "schema": { "$ref": "#/entities/Uplink" },
+      "description": "Stores E2E Uplink drawing and schematic records"
+    },
+    "/sids/{sidId}": {
+      "schema": { "$ref": "#/entities/Sid" },
+      "description": "Stores customer SID service mapping records"
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Stores user profile metadata isolated per user"
+    }
+  }
+}

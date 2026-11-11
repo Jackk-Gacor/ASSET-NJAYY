@@ -17,6 +17,7 @@ import { NetworkMapView } from './components/internal/NetworkMapView';
 import { LogicalTopologyView } from './components/internal/LogicalTopologyView';
 import { DataRingView } from './components/internal/DataRingView';
 import { ReportsView } from './components/internal/ReportsView';
+import { AdminAccountsView } from './components/internal/AdminAccountsView';
 import { DataCoreDetailModal } from './components/internal/DataCoreDetailModal';
 
 const AppContent: React.FC = () => {
@@ -42,6 +43,7 @@ const AppContent: React.FC = () => {
       'topology',
       'data-ring',
       'reports',
+      'admin-accounts',
     ].includes(currentView);
 
   return (
@@ -74,6 +76,7 @@ const AppContent: React.FC = () => {
           )}
           {currentView === 'topology' && <LogicalTopologyView />}
           {currentView === 'reports' && <ReportsView />}
+          {currentView === 'admin-accounts' && <AdminAccountsView />}
         </InternalLayout>
       ) : (
         <div className="flex-1 flex flex-col bg-slate-50 text-slate-800">

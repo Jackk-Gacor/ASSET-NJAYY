@@ -1,53 +1,86 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { UserRole } from '../../types';
-import { INITIAL_USERS } from '../../data/initialData';
-import { X, ShieldCheck, User, ArrowRight, Lock, KeyRound } from 'lucide-react';
+import {
+  X,
+  ShieldCheck,
+  User,
+  ArrowRight,
+  Lock,
+  KeyRound,
+  AlertCircle,
+  Eye,
+  EyeOff,
+} from 'lucide-react';
+
+const ROLE_DEFAULT_IDENTIFIER: Record<UserRole, string> = {
+  Admin: 'admin123',
+  Engineering: 'adamahmad09@gmail.com',
+  'Tim Data': 'timdata@iconplus.co.id',
+  Field: 'field@iconplus.co.id',
+  Supervisor: 'supervisor@iconplus.co.id',
+  Viewer: 'viewer@iconplus.co.id',
+};
 
 export const LoginModal: React.FC = () => {
-  const { isLoginModalOpen, setIsLoginModalOpen, login } = useApp();
+  const { isLoginModalOpen, setIsLoginModalOpen, loginWithCredentials, loginWithGoogle } = useApp();
   const [selectedRole, setSelectedRole] = useState<UserRole>('Admin');
-  const [username, setUsername] = useState('admin.asset');
-  const [password, setPassword] = useState('••••••••');
+  const [username, setUsername] = useState('admin123');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isLoginModalOpen) return null;
 
-  const rolesConfig: { role: UserRole; label: string; desc: string; color: string }[] = [
+  const rolesConfig: {
+    role: UserRole;
+    label: string;
+    shortDesc: string;
+    identifier: string;
+    passwordHint: string;
+  }[] = [
     {
       role: 'Admin',
       label: 'Admin',
-      desc: 'Akses penuh ke semua modul, konfigurasi data, approval & user switch',
-      color: 'border-purple-300 bg-purple-50 text-purple-700',
-    },
-    {
-      role: 'Tim Data',
-      label: 'Tim Data',
-      desc: 'Input & upload data core, manajemen kapasitas port, inventarisasi',
-      color: 'border-blue-300 bg-blue-50 text-blue-700',
+      shortDesc: 'Akses penuh & switch role',
+      identifier: 'admin123',
+      passwordHint: '12345678',
     },
     {
       role: 'Engineering',
       label: 'Drawing Data',
-      desc: 'Feeder, Uplink, SID mapping, upload berkas CAD, GIS KMZ & Visio',
-      color: 'border-sky-300 bg-sky-50 text-sky-700',
+      shortDesc: 'Feeder, Uplink & SID',
+      identifier: 'adamahmad09@gmail.com',
+      passwordHint: 'adam123',
+    },
+    {
+      role: 'Tim Data',
+      label: 'Tim Data',
+      shortDesc: 'Data core & kapasitas',
+      identifier: 'timdata@iconplus.co.id',
+      passwordHint: 'data123',
     },
     {
       role: 'Field',
       label: 'Field',
-      desc: 'Input laporan lapangan, verifikasi redaman OTDR & kondisi fisik tiang',
-      color: 'border-amber-300 bg-amber-50 text-amber-700',
+      shortDesc: 'Laporan & OTDR lapangan',
+      identifier: 'field@iconplus.co.id',
+      passwordHint: 'field123',
     },
     {
       role: 'Supervisor',
       label: 'Supervisor',
-      desc: 'Approval WIG, evaluasi KPI tim, verifikasi SLA & laporan audit',
-      color: 'border-emerald-300 bg-emerald-50 text-emerald-700',
+      shortDesc: 'Approval & evaluasi SLA',
+      identifier: 'supervisor@iconplus.co.id',
+      passwordHint: 'spv123',
     },
     {
       role: 'Viewer',
       label: 'Viewer',
-      desc: 'Mode pantau cepat untuk audit wilayah & pencarian data core read-only',
-      color: 'border-slate-300 bg-slate-50 text-slate-700',
+      shortDesc: 'Pantau & audit read-only',
+      identifier: 'viewer@iconplus.co.id',
+      passwordHint: 'viewer123',
     },
   ];
 
@@ -55,54 +88,63 @@ export const LoginModal: React.FC = () => {
 
   const handleRoleSelect = (role: UserRole) => {
     setSelectedRole(role);
-    const user = INITIAL_USERS.find(u => u.role === role);
-    if (user) {
-      setUsername(user.email.split('@')[0]);
+    setUsername(ROLE_DEFAULT_IDENTIFIER[role]);
+    setPassword('');
+    setErrorMsg(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg(null);
+    setIsSubmitting(true);
+    try {
+      const result = await loginWithCredentials(username, password, selectedRole);
+      if (!result.ok) {
+        setErrorMsg(result.error || 'Username/email atau kata sandi tidak valid.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleQuickLogin = (role: UserRole) => {
-    login(role);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    login(selectedRole);
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn">
-      <div 
-        className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl overflow-hidden relative"
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm animate-fadeIn"
+      onClick={() => setIsLoginModalOpen(false)}
+    >
+      <div
+        className="bg-white text-slate-900 rounded-2xl shadow-2xl border border-slate-200 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="p-6 bg-gradient-to-r from-blue-900 to-slate-900 text-white flex items-center justify-between">
+        {/* Fixed Header */}
+        <div className="px-6 py-4 bg-gradient-to-r from-blue-900 to-slate-900 text-white flex items-center justify-between shrink-0">
           <div>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-sky-400" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-sky-300 font-mono">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-sky-400" />
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-sky-300 font-mono">
                 AUTENTIKASI PORTAL INTERNAL
               </span>
             </div>
-            <h3 className="text-xl font-bold text-white mt-1">Masuk ke Sistem Divisi Asset</h3>
-            <p className="text-xs text-slate-300">Pilih simulasi akun staf atau login langsung</p>
+            <h3 className="text-lg font-bold text-white mt-0.5">Masuk ke Sistem Divisi Asset</h3>
           </div>
           <button
+            type="button"
             onClick={() => setIsLoginModalOpen(false)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            aria-label="Tutup modal login"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
-          {/* Role selector buttons */}
+        {/* Scrollable Body */}
+        <div className="p-5 space-y-4 overflow-y-auto">
+          {/* Role Selector */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-              Pilih Role Pengguna (Simulasi Hak Akses Langsung):
+            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+              Pilih Role Tujuan Login
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {rolesConfig.map(r => {
                 const isSelected = selectedRole === r.role;
                 return (
@@ -110,18 +152,18 @@ export const LoginModal: React.FC = () => {
                     key={r.role}
                     type="button"
                     onClick={() => handleRoleSelect(r.role)}
-                    className={`p-3 text-left rounded-xl border text-xs transition-all relative ${
+                    className={`px-3 py-2.5 text-left rounded-xl border transition-all cursor-pointer ${
                       isSelected
-                        ? 'border-blue-600 bg-blue-50/70 ring-2 ring-blue-600 font-bold text-blue-900'
-                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                        ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600 text-blue-950'
+                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-800'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold">{r.label}</span>
-                      {isSelected && <span className="w-2 h-2 rounded-full bg-blue-600" />}
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-xs font-bold">{r.label}</span>
+                      {isSelected && <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />}
                     </div>
-                    <p className="text-[10px] text-slate-600 mt-1 line-clamp-2 font-normal">
-                      {r.desc}
+                    <p className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                      {r.shortDesc}
                     </p>
                   </button>
                 );
@@ -129,20 +171,31 @@ export const LoginModal: React.FC = () => {
             </div>
           </div>
 
-          {/* Form Credentials */}
-          <form onSubmit={handleSubmit} className="space-y-4 pt-2 border-t border-slate-100">
+          {/* Credentials Form */}
+          <form onSubmit={handleSubmit} className="space-y-3 pt-3 border-t border-slate-100">
+            {errorMsg && (
+              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
+
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Username / Email Staf
+                Username / Email Akun
               </label>
               <div className="relative">
-                <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   value={username}
-                  onChange={e => setUsername(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
-                  placeholder="username@iconpl.co.id"
+                  onChange={e => {
+                    setUsername(e.target.value);
+                    if (errorMsg) setErrorMsg(null);
+                  }}
+                  className="w-full pl-9 pr-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white"
+                  placeholder="admin123 atau adamahmad09@gmail.com"
+                  autoComplete="username"
                   required
                 />
               </div>
@@ -153,49 +206,50 @@ export const LoginModal: React.FC = () => {
                 Kata Sandi
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
+                  onChange={e => {
+                    setPassword(e.target.value);
+                    if (errorMsg) setErrorMsg(null);
+                  }}
+                  placeholder="Masukkan kata sandi akun"
+                  className="w-full pl-9 pr-10 py-2 text-sm text-slate-900 placeholder:text-slate-400 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white"
+                  autoComplete="current-password"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(prev => !prev)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
+                  aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Lihat kata sandi'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-600">
-                Data disimpan di browser (localStorage)
-              </span>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-1">
+              <button
+                type="button"
+                onClick={loginWithGoogle}
+                className="px-3.5 py-2.5 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <KeyRound className="w-3.5 h-3.5 text-blue-600" />
+                <span>Masuk dengan Google</span>
+              </button>
+
               <button
                 type="submit"
-                className="px-5 py-2.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
+                disabled={isSubmitting}
+                className="px-5 py-2.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-60 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <span>Masuk Sebagai {selectedRoleLabel}</span>
+                <span>{isSubmitting ? 'Memverifikasi...' : `Masuk Sebagai ${selectedRoleLabel}`}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </form>
-
-          {/* Quick One-Click Logins */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-            <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">
-              ⚡ Pintasan Cepat 1-Klik:
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {rolesConfig.map(r => (
-                <button
-                  key={r.role}
-                  type="button"
-                  onClick={() => handleQuickLogin(r.role)}
-                  className="px-2.5 py-1 text-xs rounded bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-medium transition-colors"
-                >
-                  Masuk sbg {r.label}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -1,0 +1,226 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global safety net: default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Core hardened primitives
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(ownerId) {
+      return isSignedIn() && request.auth.uid == ownerId;
+    }
+
+    function isAdmin() {
+      return isVerifiedUser() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == 'adamahmad091105@gmail.com'
+      );
+    }
+
+    function isOptionalString(data, key, maxLen) {
+      return !(key in data) || (data[key] is string && data[key].size() <= maxLen);
+    }
+
+    // Entity validators
+    function isValidFeeder(data) {
+      return data.keys().hasAll(['feederCode', 'hostnameOlt', 'statusReport', 'pic', 'ownerId', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'feederCode', 'hostnameOlt', 'statusReport', 'actualDone', 'reportDone',
+          'pic', 'datacoreVisio', 'datacoreVisioUrl', 'mymaps', 'mymapsUrl',
+          'keterangan', 'ownerId', 'createdAt', 'updatedAt'
+        ])
+        && data.feederCode is string && data.feederCode.size() >= 1 && data.feederCode.size() <= 64
+        && data.hostnameOlt is string && data.hostnameOlt.size() >= 1 && data.hostnameOlt.size() <= 160
+        && data.statusReport in ['DONE', 'PROGRESS']
+        && isOptionalString(data, 'actualDone', 32)
+        && isOptionalString(data, 'reportDone', 32)
+        && data.pic is string && data.pic.size() >= 1 && data.pic.size() <= 64
+        && isOptionalString(data, 'datacoreVisio', 200)
+        && isOptionalString(data, 'datacoreVisioUrl', 500)
+        && isOptionalString(data, 'mymaps', 200)
+        && isOptionalString(data, 'mymapsUrl', 500)
+        && isOptionalString(data, 'keterangan', 500)
+        && data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidUplink(data) {
+      return data.keys().hasAll(['uplinkCode', 'hostnameOlt', 'statusReport', 'pic', 'ownerId', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'uplinkCode', 'hostnameOlt', 'statusReport', 'actualDone', 'reportDone',
+          'pic', 'datacoreVisio', 'datacoreVisioUrl', 'mymaps', 'mymapsUrl',
+          'schematicE2E', 'schematicE2EUrl', 'keterangan', 'ownerId', 'createdAt', 'updatedAt'
+        ])
+        && data.uplinkCode is string && data.uplinkCode.size() >= 1 && data.uplinkCode.size() <= 64
+        && data.hostnameOlt is string && data.hostnameOlt.size() >= 1 && data.hostnameOlt.size() <= 160
+        && data.statusReport in ['DONE', 'PROGRESS']
+        && isOptionalString(data, 'actualDone', 32)
+        && isOptionalString(data, 'reportDone', 32)
+        && data.pic is string && data.pic.size() >= 1 && data.pic.size() <= 64
+        && isOptionalString(data, 'datacoreVisio', 200)
+        && isOptionalString(data, 'datacoreVisioUrl', 500)
+        && isOptionalString(data, 'mymaps', 200)
+        && isOptionalString(data, 'mymapsUrl', 500)
+        && isOptionalString(data, 'schematicE2E', 240)
+        && isOptionalString(data, 'schematicE2EUrl', 500)
+        && isOptionalString(data, 'keterangan', 500)
+        && data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSid(data) {
+      return data.keys().hasAll(['sidNumber', 'customerName', 'serviceType', 'status', 'bandwidthMbps', 'pic', 'ownerId', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'sidNumber', 'customerName', 'serviceType', 'relatedFeederId', 'relatedUplinkId',
+          'status', 'bandwidthMbps', 'pic', 'ownerId', 'createdAt', 'updatedAt'
+        ])
+        && data.sidNumber is string && data.sidNumber.size() >= 1 && data.sidNumber.size() <= 64
+        && data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 160
+        && data.serviceType in ['IP-VPN', 'Metronet', 'Astinet', 'Clear Channel']
+        && isOptionalString(data, 'relatedFeederId', 64)
+        && isOptionalString(data, 'relatedUplinkId', 64)
+        && data.status in ['Active', 'Survey', 'Commissioning']
+        && data.bandwidthMbps is number && data.bandwidthMbps >= 0 && data.bandwidthMbps <= 1000000
+        && data.pic is string && data.pic.size() >= 1 && data.pic.size() <= 64
+        && data.ownerId is string && data.ownerId.size() >= 1 && data.ownerId.size() <= 128
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'displayName', 'role', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'displayName', 'role', 'createdAt', 'updatedAt'])
+        && data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 120
+        && data.role in ['Viewer', 'Engineering', 'Tim Data', 'Field', 'Supervisor', 'Admin']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    // Feeders collection
+    match /feeders/{feederId} {
+      allow get: if isValidId(feederId) && isVerifiedUser() && (isOwner(existing().ownerId) || isAdmin());
+      allow list: if isVerifiedUser() && (resource.data.ownerId == request.auth.uid || isAdmin());
+      allow create: if isValidId(feederId) && isVerifiedUser()
+        && isValidFeeder(incoming())
+        && incoming().ownerId == request.auth.uid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(feederId) && isVerifiedUser()
+        && isValidFeeder(incoming())
+        && (isOwner(existing().ownerId) || isAdmin())
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          (incoming().diff(existing()).affectedKeys().hasOnly(['statusReport', 'reportDone', 'updatedAt'])) ||
+          (incoming().diff(existing()).affectedKeys().hasOnly([
+            'hostnameOlt', 'statusReport', 'actualDone', 'reportDone', 'pic',
+            'datacoreVisio', 'datacoreVisioUrl', 'mymaps', 'mymapsUrl', 'keterangan', 'updatedAt'
+          ]))
+        );
+      allow delete: if isValidId(feederId) && isVerifiedUser() && (isOwner(existing().ownerId) || isAdmin());
+    }
+
+    // Uplinks collection
+    match /uplinks/{uplinkId} {
+      allow get: if isValidId(uplinkId) && isVerifiedUser() && (isOwner(existing().ownerId) || isAdmin());
+      allow list: if isVerifiedUser() && (resource.data.ownerId == request.auth.uid || isAdmin());
+      allow create: if isValidId(uplinkId) && isVerifiedUser()
+        && isValidUplink(incoming())
+        && incoming().ownerId == request.auth.uid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(uplinkId) && isVerifiedUser()
+        && isValidUplink(incoming())
+        && (isOwner(existing().ownerId) || isAdmin())
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          (incoming().diff(existing()).affectedKeys().hasOnly(['statusReport', 'reportDone', 'updatedAt'])) ||
+          (incoming().diff(existing()).affectedKeys().hasOnly([
+            'hostnameOlt', 'statusReport', 'actualDone', 'reportDone', 'pic',
+            'datacoreVisio', 'datacoreVisioUrl', 'mymaps', 'mymapsUrl',
+            'schematicE2E', 'schematicE2EUrl', 'keterangan', 'updatedAt'
+          ]))
+        );
+      allow delete: if isValidId(uplinkId) && isVerifiedUser() && (isOwner(existing().ownerId) || isAdmin());
+    }
+
+    // SIDs collection
+    match /sids/{sidId} {
+      allow get: if isValidId(sidId) && isVerifiedUser() && (isOwner(existing().ownerId) || isAdmin());
+      allow list: if isVerifiedUser() && (resource.data.ownerId == request.auth.uid || isAdmin());
+      allow create: if isValidId(sidId) && isVerifiedUser()
+        && isValidSid(incoming())
+        && incoming().ownerId == request.auth.uid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(sidId) && isVerifiedUser()
+        && isValidSid(incoming())
+        && (isOwner(existing().ownerId) || isAdmin())
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'customerName', 'serviceType', 'relatedFeederId', 'relatedUplinkId',
+          'status', 'bandwidthMbps', 'pic', 'updatedAt'
+        ]);
+      allow delete: if isValidId(sidId) && isVerifiedUser() && (isOwner(existing().ownerId) || isAdmin());
+    }
+
+    // User profiles (isolated per owner; prevents self-assigned Admin role)
+    match /users/{userId} {
+      allow get: if isValidId(userId) && isVerifiedUser() && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isValidId(userId) && isVerifiedUser()
+        && isOwner(userId)
+        && isValidUserProfile(incoming())
+        && incoming().uid == request.auth.uid
+        && incoming().role == 'Viewer'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(userId) && isVerifiedUser()
+        && isValidUserProfile(incoming())
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          (isOwner(userId) && incoming().role == existing().role && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'updatedAt'])) ||
+          (isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'role', 'updatedAt']))
+        );
+      allow delete: if isAdmin();
+    }
+
+    // Admin registry (read-only for owner check)
+    match /admins/{adminId} {
+      allow get: if isValidId(adminId) && isVerifiedUser() && isOwner(adminId);
+      allow list, write: if false;
+    }
+  }
+}
